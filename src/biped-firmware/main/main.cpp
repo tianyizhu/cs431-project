@@ -55,7 +55,7 @@ setup()
     /*
      *  Using the Arduino pinMode function, set pin mode for
      *  the I/O expander interrupt pins. Use pull-up if the pin
-     *  mode is input.
+     *  mode is input.biped
      *
      *  Learn more about pull-up resistors here:
      *  https://en.wikipedia.org/wiki/Pull-up_resistor
@@ -78,6 +78,10 @@ setup()
      *
      *  TODO LAB 1 YOUR CODE HERE.
      */
+	Wire.setPins(ESP32Pin::i2c_sda, ESP32Pin::i2c_scl);
+	Serial::setLogLevelMax(SerialParameter::log_level_max);
+//	Serial.begin();
+
 
     /*
      *  Initialize the Arduino I2C driver (Wire), the Arduino
@@ -86,10 +90,15 @@ setup()
      *
      *  Refer to the Arduino Wire and EEPROM headers for their
      *  functions, the display and serial headers for their
-     *  functions, and the parameter header for the EEPROM size.
+     *  functions, and the parameters header for the EEPROM size.
      *
      *  TODO LAB 1 YOUR CODE HERE.
      */
+	Wire.begin();
+	EEPROM.begin(EEPROMParameter::size);
+	Display::initialize();
+	Serial::initialize();
+
 
     /*
      *  Read the Biped serial number from the EEPROM and store it to the
@@ -112,6 +121,7 @@ setup()
      *
      *  TODO LAB 1 YOUR CODE HERE.
      */
+	serial_number_ = static_cast<unsigned>(EEPROM.readUInt(AddressParameter::eeprom_serial_number));
 
     /*
      *  Instantiate the camera and the NeoPixel global objects using the C++
@@ -124,6 +134,8 @@ setup()
      *
      *  TODO LAB 1 YOUR CODE HERE.
      */
+	camera_ = std::make_shared<Camera>();
+	neopixel_ = std::make_shared<NeoPixel>();
 
     /*
      *  Instantiate the timer global object using the C++ STL
@@ -193,7 +205,7 @@ setup()
      *
      *  Learn more about C++ Polymorphism here:
      *  https://www.w3schools.com/cpp/cpp_polymorphism.asp
-     *
+     *biped
      *  Refer to the global header for the global object shared pointers.
      *
      *  TODO LAB 8 YOUR CODE HERE.
@@ -386,6 +398,11 @@ setup()
      *
      *  TODO LAB 1 YOUR CODE HERE.
      */
+//	biped::firmware::Serial s =
+	if (Serial::getLogLevelWorst() >= LogLevel::error)
+		biped::firmware::Serial(LogLevel::info) << "Initialized with error(s).";
+	else
+		biped::firmware::Serial(LogLevel::info) << "Initialized";
 }
 
 /**
@@ -406,4 +423,5 @@ loop()
      *
      *  TODO LAB 1 YOUR CODE HERE.
      */
+	bestEffortTask();
 }
