@@ -1,3 +1,10 @@
+./scripts/biped-firmware/setup.bash
+
+cd build/biped-firmware
+
+make -j$(getconf _NPROCESSORS_ONLN) && make -j1 upload SERIAL_PORT=/dev/ttyUSB0
+
+
 # Biped Firmware
 
 ## Table of Contents

@@ -400,9 +400,11 @@ setup()
      */
 //	biped::firmware::Serial s =
 	if (Serial::getLogLevelWorst() >= LogLevel::error)
-		biped::firmware::Serial(LogLevel::info) << "Initialized with error(s).";
+		biped::firmware::Serial(LogLevel::info) << "Initialized with error(s): " << (int)Serial::getLogLevelWorst();
 	else
 		biped::firmware::Serial(LogLevel::info) << "Initialized";
+
+     biped::firmware::Serial(LogLevel::info) << "serial number: " << serial_number_;
 }
 
 /**

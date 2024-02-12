@@ -78,6 +78,10 @@ bestEffortTask()
      *  TODO LAB 1 YOUR CODE HERE.
      */
 
+//	biped::firmware::Serial(LogLevel::info) << "Task";
+    Display(0) << "Biped: #" << serial_number_;
+
+
     /*
      *  Using the Display class in the display header, print to the second line of the OLED display the
      *  string literal "Real-Time: ", followed by the real-time task execution time global variable,
@@ -90,6 +94,7 @@ bestEffortTask()
      *
      *  TODO LAB 1 YOUR CODE HERE.
      */
+    Display(1) << "Real-Time: " << execution_time_real_time_task_ << "  " << interval_real_time_task_ ;
 
     /*
      *  Using the ESP-IDF ESP object in the Esp header, calculate the heap utilization percentage (i.e.,
@@ -107,7 +112,7 @@ bestEffortTask()
      *
      *  TODO LAB 1 YOUR CODE HERE.
      */
-
+    Display(2) << "Heap: " << (float)ESP.getFreeHeap()/(float)ESP.getHeapSize()*100 << "%";
     /*
      *  If the Wi-Fi global shared pointer is not a null pointer, check the Wi-Fi status using the Wi-Fi
      *  global shared pointer.
@@ -127,6 +132,16 @@ bestEffortTask()
      *
      *  TODO LAB 1 YOUR CODE HERE.
      */
+    if (wifi_ != nullptr) {
+    	if (wifi_->getWiFiStatus() == WL_CONNECTED)
+    		Display(3) << "Wi-Fi: " << wifi_->getWiFiLocalIP();
+    	else
+    		Display(3) << "Wi-Fi: disconnected";
+    }
+
+	else
+		Display(3) << "Wi-Fi: disconnected";
+
 
     /*
      *  If the controller global shared pointer is not a null pointer, check the controller active status
@@ -145,6 +160,16 @@ bestEffortTask()
      *
      *  TODO LAB 1 YOUR CODE HERE.
      */
+
+    if (controller_ != nullptr) {
+    	if (controller_->getActiveStatus())
+    		Display(4) << "Controller: active";
+    	else
+    		Display(4) << "Controller: inactive";
+    }
+
+	else
+		Display(4) << "Controller: inactive";
 
     /*
      *  If the planner global shared pointer is not a null pointer, using the planner global shared pointer,
@@ -168,6 +193,11 @@ bestEffortTask()
      *  TODO LAB 1 YOUR CODE HERE.
      */
 
+    if (planner_stage < 0)
+    	Display(5) << "Planner: inactive";
+    else
+    	Display(5) << "Planner: stage " << planner_stage;
+
     /*
      *  If the NeoPixel global shared pointer is not a null pointer, using the NeoPixel global shared
      *  pointer, show the NeoPixel frame by flushing the frame to the NeoPixel array.
@@ -178,6 +208,10 @@ bestEffortTask()
      *  TODO LAB 1 YOUR CODE HERE.
      */
 
+    if (neopixel_ != nullptr) {
+    	neopixel_->show();
+    }
+
     /*
      *  Using the Display class in the display header, display the streamed items by flushing the
      *  display driver buffer to the display.
@@ -186,6 +220,8 @@ bestEffortTask()
      *
      *  TODO LAB 1 YOUR CODE HERE.
      */
+    Display::display();
+
 }
 
 void
