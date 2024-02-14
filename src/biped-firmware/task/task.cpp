@@ -94,7 +94,7 @@ bestEffortTask()
      *
      *  TODO LAB 1 YOUR CODE HERE.
      */
-    Display(1) << "Real-Time: " << execution_time_real_time_task_ << "  " << interval_real_time_task_ ;
+    Display(1) << "Real-Time: " << execution_time_real_time_task_ << " " << interval_real_time_task_ ;
 
     /*
      *  Using the ESP-IDF ESP object in the Esp header, calculate the heap utilization percentage (i.e.,
@@ -112,7 +112,7 @@ bestEffortTask()
      *
      *  TODO LAB 1 YOUR CODE HERE.
      */
-    Display(2) << "Heap: " << (float)ESP.getFreeHeap()/(float)ESP.getHeapSize()*100 << "%";
+    Display(2) << "Heap: " << 100-(float)ESP.getFreeHeap()/(float)ESP.getHeapSize()*100 << "%";
     /*
      *  If the Wi-Fi global shared pointer is not a null pointer, check the Wi-Fi status using the Wi-Fi
      *  global shared pointer.

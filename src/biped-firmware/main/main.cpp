@@ -121,7 +121,7 @@ setup()
      *
      *  TODO LAB 1 YOUR CODE HERE.
      */
-	serial_number_ = static_cast<unsigned>(EEPROM.readUInt(AddressParameter::eeprom_serial_number));
+	serial_number_ = static_cast<unsigned>(EEPROM.readByte(AddressParameter::eeprom_serial_number));
 
     /*
      *  Instantiate the camera and the NeoPixel global objects using the C++
@@ -399,8 +399,8 @@ setup()
      *  TODO LAB 1 YOUR CODE HERE.
      */
 //	biped::firmware::Serial s =
-	if (Serial::getLogLevelWorst() >= LogLevel::error)
-		biped::firmware::Serial(LogLevel::info) << "Initialized with error(s): " << (int)Serial::getLogLevelWorst();
+	if (Serial::getLogLevelWorst() <= LogLevel::error)
+		biped::firmware::Serial(LogLevel::warn) << "Initialized with error(s): " << (int)Serial::getLogLevelWorst();
 	else
 		biped::firmware::Serial(LogLevel::info) << "Initialized";
 

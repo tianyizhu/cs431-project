@@ -322,6 +322,8 @@ timerInterruptHandler(void* arg)
      *
      *  TODO LAB 2 YOUR CODE HERE.
      */
+    interval_real_time_task_ =  micros() - time_point_start;
+    time_point_start = micros();
 
     /*
      *  If the real-time task handle global pointer is not a null pointer, wake
@@ -345,6 +347,8 @@ timerInterruptHandler(void* arg)
      *
      *  TODO LAB 2 YOUR CODE HERE.
      */
+    if (timer_ != nullptr)
+    	timer_->clearInterrupt();
 }
 }   // namespace firmware
 }   // namespace biped
