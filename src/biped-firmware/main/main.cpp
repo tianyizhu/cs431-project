@@ -146,6 +146,7 @@ setup()
      *
      *  TODO LAB 2 YOUR CODE HERE.
      */
+	 timer_ = std::make_shared<Timer>(TimerParameter::group, TimerParameter::index);
 
     /*
      *  Instantiate the I/O expander global objects using the C++ STL
@@ -353,6 +354,7 @@ setup()
      *
      *  TODO LAB 2 YOUR CODE HERE.
      */
+	 timer_->setInterval(static_cast<uint64_t>(secondsToMicroseconds(PeriodParameter::fast)));
 
     /*
      *  Using the timer global shared pointer, attach the timer interrupt handler to the
@@ -363,6 +365,7 @@ setup()
      *
      *  TODO LAB 2 YOUR CODE HERE.
      */
+     timer_->attachInterrupt(&timerInterruptHandler);
 
     /*
      *  Using the timer global shared pointer, enable the hardware timer.
@@ -371,6 +374,8 @@ setup()
      *
      *  TODO LAB 2 YOUR CODE HERE.
      */
+     timer_->enable();
+
 
     /*
      *  Print to the serial using the Serial class in the serial header. Pass the desired log

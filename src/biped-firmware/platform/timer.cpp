@@ -52,6 +52,8 @@ Timer::Timer(const timer_group_t& group, const timer_idx_t& index) : group_(grou
      *
      *  TODO LAB 2 YOUR CODE HERE.
      */
+    register_interrupt_clear_ = reinterpret_cast<volatile uint32_t*>(TIMG_INT_CLR_TIMERS_REG(group_));   //!< Timer interrupt clear register pointer.
+    register_interrupt_enable_ = reinterpret_cast<volatile uint32_t*>(TIMG_INT_ENA_TIMERS_REG(group_));  //!< Timer interrupt enable register pointer.
 
     /*
      *  Switch on timer index.
@@ -80,6 +82,13 @@ Timer::Timer(const timer_group_t& group, const timer_idx_t& index) : group_(grou
              *
              *  TODO LAB 2 YOUR CODE HERE.
              */
+            register_config_ = reinterpret_cast<volatile uint32_t*>(TIMG_T0CONFIG_REG(group_));    //!< Timer configuration register pointer.
+            register_alarm_low_ = reinterpret_cast<volatile uint32_t*>(TIMG_T0ALARMLO_REG(group_)); //!< Timer low-bit alarm register pointer.
+            register_alarm_high_ = reinterpret_cast<volatile uint32_t*>(TIMG_T0ALARMHI_REG(group_));    //!< Timer high-bit alarm register pointer.
+            register_counter_low_ = reinterpret_cast<volatile uint32_t*>(TIMG_T0LO_REG(group_));   //!< Timer low-bit counter register pointer.
+            register_counter_high_ = reinterpret_cast<volatile uint32_t*>(TIMG_T0HI_REG(group_));  //!< Timer high-bit counter register pointer.
+            register_load_low_ = reinterpret_cast<volatile uint32_t*>(TIMG_T0LOADHI_REG(group_));  //!< Timer low-bit load register pointer.
+            register_load_high_ = reinterpret_cast<volatile uint32_t*>(TIMG_T0LOADLO_REG(group_)); //!< Timer high-bit load register pointer.
 
             /*
              *  Frame the timer prescaler by first static_cast the timer prescaler parameter in the parameter
@@ -96,6 +105,7 @@ Timer::Timer(const timer_group_t& group, const timer_idx_t& index) : group_(grou
              *
              *  TODO LAB 2 YOUR CODE HERE.
              */
+            uint32_t config_reg = ((static_cast<uint32_t>(TimerParameter::prescaler)) << TIMG_T0_DIVIDER_S) & TIMG_T0_DIVIDER_M;
 
             /*
              *  Using TIMG_T... macros in the timer_group_reg header, set the increase, auto-reload, level
@@ -114,6 +124,11 @@ Timer::Timer(const timer_group_t& group, const timer_idx_t& index) : group_(grou
              *
              *  TODO LAB 2 YOUR CODE HERE.
              */
+            config_reg |= TIMG_T0_INCREASE;
+            config_reg |= TIMG_T0_AUTORELOAD;
+            config_reg |= TIMG_T0_LEVEL_INT_EN;
+            config_reg |= TIMG_T0_ALARM_EN;
+            *register_config_ = config_reg;
 
             /*
              *  Switch on timer group.
@@ -136,6 +151,7 @@ Timer::Timer(const timer_group_t& group, const timer_idx_t& index) : group_(grou
                      *
                      *  TODO LAB 2 YOUR CODE HERE.
                      */
+                	interrupt_source_ = ETS_TG0_T0_LEVEL_INTR_SOURCE;
 
                     break;
                 }
@@ -155,6 +171,7 @@ Timer::Timer(const timer_group_t& group, const timer_idx_t& index) : group_(grou
                      *
                      *  TODO LAB 2 YOUR CODE HERE.
                      */
+                	interrupt_source_ = ETS_TG1_T0_LEVEL_INTR_SOURCE;
 
                     break;
                 }
@@ -188,6 +205,13 @@ Timer::Timer(const timer_group_t& group, const timer_idx_t& index) : group_(grou
              *
              *  TODO LAB 2 YOUR CODE HERE.
              */
+        	register_config_ = reinterpret_cast<volatile uint32_t*>(TIMG_T1CONFIG_REG(group_));    //!< Timer configuration register pointer.
+			register_alarm_low_ = reinterpret_cast<volatile uint32_t*>(TIMG_T1ALARMLO_REG(group_)); //!< Timer low-bit alarm register pointer.
+			register_alarm_high_ = reinterpret_cast<volatile uint32_t*>(TIMG_T1ALARMHI_REG(group_));    //!< Timer high-bit alarm register pointer.
+			register_counter_low_ = reinterpret_cast<volatile uint32_t*>(TIMG_T1LO_REG(group_));   //!< Timer low-bit counter register pointer.
+			register_counter_high_ = reinterpret_cast<volatile uint32_t*>(TIMG_T1HI_REG(group_));  //!< Timer high-bit counter register pointer.
+			register_load_low_ = reinterpret_cast<volatile uint32_t*>(TIMG_T1LOADHI_REG(group_));  //!< Timer low-bit load register pointer.
+			register_load_high_ = reinterpret_cast<volatile uint32_t*>(TIMG_T1LOADLO_REG(group_)); //!< Timer high-bit load register pointer.
 
             /*
              *  Frame the timer prescaler by first static_cast the timer prescaler parameter in the parameter
@@ -204,6 +228,7 @@ Timer::Timer(const timer_group_t& group, const timer_idx_t& index) : group_(grou
              *
              *  TODO LAB 2 YOUR CODE HERE.
              */
+			uint32_t config_reg = ((static_cast<uint32_t>(TimerParameter::prescaler)) << TIMG_T1_DIVIDER_S) & TIMG_T1_DIVIDER_M;
 
             /*
              *  Using TIMG_T... macros in the timer_group_reg header, set the increase, auto-reload, level
@@ -222,6 +247,11 @@ Timer::Timer(const timer_group_t& group, const timer_idx_t& index) : group_(grou
              *
              *  TODO LAB 2 YOUR CODE HERE.
              */
+            config_reg |= TIMG_T1_INCREASE;
+            config_reg |= TIMG_T1_AUTORELOAD;
+            config_reg |= TIMG_T1_LEVEL_INT_EN;
+            config_reg |= TIMG_T1_ALARM_EN;
+            *register_config_ = config_reg;
 
             /*
              *  Switch on timer group.
@@ -244,6 +274,7 @@ Timer::Timer(const timer_group_t& group, const timer_idx_t& index) : group_(grou
                      *
                      *  TODO LAB 2 YOUR CODE HERE.
                      */
+                	interrupt_source_ = ETS_TG0_T1_LEVEL_INTR_SOURCE;
 
                     break;
                 }
@@ -263,6 +294,7 @@ Timer::Timer(const timer_group_t& group, const timer_idx_t& index) : group_(grou
                      *
                      *  TODO LAB 2 YOUR CODE HERE.
                      */
+                	interrupt_source_ = ETS_TG1_T1_LEVEL_INTR_SOURCE;
 
                     break;
                 }
@@ -292,6 +324,12 @@ Timer::Timer(const timer_group_t& group, const timer_idx_t& index) : group_(grou
      *
      *  TODO LAB 2 YOUR CODE HERE.
      */
+    *register_alarm_low_ = 0x0000; //!< Timer low-bit alarm register pointer.
+	*register_alarm_high_ = 0x0000;    //!< Timer high-bit alarm register pointer.
+	*register_counter_low_ = 0x0000;   //!< Timer low-bit counter register pointer.
+	*register_counter_high_ = 0x0000;  //!< Timer high-bit counter register pointer.
+	*register_load_low_ = 0x0000;  //!< Timer low-bit load register pointer.
+	*register_load_high_ = 0x0000;
 }
 
 bool
@@ -303,6 +341,7 @@ Timer::attachInterrupt(void
      *
      *  TODO LAB 2 YOUR CODE HERE.
      */
+	if(interrupt_source_ < 0) return false;
 
     /*
      *  Using the ESP-IDF esp_intr_alloc function in the esp_intr_alloc header, allocate
@@ -320,6 +359,8 @@ Timer::attachInterrupt(void
      *  TODO LAB 2 YOUR CODE HERE.
      */
 
+	esp_intr_alloc(interrupt_source_, 0, static_cast<intr_handler_t>(handler), arg, &interrupt_handle_);
+
     /*
      *  Using the ESP-IDF esp_intr_enable function in the esp_intr_alloc header, enable
      *  the allocated timer interrupt handler using the class member interrupt handle
@@ -330,6 +371,7 @@ Timer::attachInterrupt(void
      *
      *  TODO LAB 2 YOUR CODE HERE.
      */
+	if(esp_intr_enable(interrupt_handle_) != ESP_OK) return false;
 
     /*
      *  Switch on timer index.
@@ -348,6 +390,7 @@ Timer::attachInterrupt(void
              *
              *  TODO LAB 2 YOUR CODE HERE.
              */
+        	*register_interrupt_enable_ |= TIMG_T0_INT_ENA;
 
             break;
         }
@@ -363,6 +406,7 @@ Timer::attachInterrupt(void
              *
              *  TODO LAB 2 YOUR CODE HERE.
              */
+        	*register_interrupt_enable_ |= TIMG_T1_INT_ENA;
 
             break;
         }
