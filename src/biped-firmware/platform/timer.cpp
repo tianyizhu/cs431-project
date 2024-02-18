@@ -442,6 +442,8 @@ Timer::clearInterrupt()
              *
              *  TODO LAB 2 YOUR CODE HERE.
              */
+        	*register_interrupt_clear_ |= TIMG_T0_INT_CLR;
+        	*register_config_ |= TIMG_T0_ALARM_EN;
 
             break;
         }
@@ -463,6 +465,9 @@ Timer::clearInterrupt()
              *
              *  TODO LAB 2 YOUR CODE HERE.
              */
+        	*register_interrupt_clear_ |= TIMG_T1_INT_CLR;
+        	*register_config_ |= TIMG_T1_ALARM_EN;
+
 
             break;
         }
@@ -490,6 +495,7 @@ Timer::detachInterrupt()
              *
              *  TODO LAB 2 YOUR CODE HERE.
              */
+        	*register_interrupt_enable_ &= (~TIMG_T0_INT_ENA);
 
             break;
         }
@@ -505,6 +511,7 @@ Timer::detachInterrupt()
              *
              *  TODO LAB 2 YOUR CODE HERE.
              */
+        	*register_interrupt_enable_ &= (~TIMG_T1_INT_ENA);
 
             break;
         }
@@ -524,6 +531,8 @@ Timer::detachInterrupt()
      *
      *  TODO LAB 2 YOUR CODE HERE.
      */
+    if (esp_intr_disable(interrupt_handle_) != ESP_OK)
+    	return false;
 
     /*
      *  Using the ESP-IDF esp_intr_free function in the esp_intr_alloc header, free the
@@ -535,6 +544,8 @@ Timer::detachInterrupt()
      *
      *  TODO LAB 2 YOUR CODE HERE.
      */
+    if (esp_intr_free(interrupt_handle_) != ESP_OK)
+    	return false;
 
     /*
      *  Set the class member interrupt handle pointer to a null pointer.
@@ -545,6 +556,7 @@ Timer::detachInterrupt()
      *
      *  TODO LAB 2 YOUR CODE HERE.
      */
+    interrupt_handle_ = nullptr;
 
     /*
      *  Return true.
@@ -569,6 +581,8 @@ Timer::disable()
              *  TODO LAB 2 YOUR CODE HERE.
              */
 
+        	*register_config_ &= (~TIMG_T0_EN);
+
             break;
         }
         case TIMER_1:
@@ -582,6 +596,7 @@ Timer::disable()
              *
              *  TODO LAB 2 YOUR CODE HERE.
              */
+        	*register_config_ &= (~TIMG_T1_EN);
 
             break;
         }
@@ -608,6 +623,7 @@ Timer::enable()
              *
              *  TODO LAB 2 YOUR CODE HERE.
              */
+        	*register_config_ |= TIMG_T0_EN;
 
             break;
         }
@@ -622,6 +638,7 @@ Timer::enable()
              *
              *  TODO LAB 2 YOUR CODE HERE.
              */
+        	*register_config_ |= TIMG_T1_EN;
 
             break;
         }
@@ -645,6 +662,9 @@ Timer::setInterval(const uint64_t& interval)
      *
      *  TODO LAB 2 YOUR CODE HERE.
      */
+
+    *register_alarm_low_ = static_cast<uint32_t>(interval); //!< Timer low-bit alarm register pointer.
+	*register_alarm_high_ = static_cast<uint32_t>(interval>>32);    //!< Timer high-bit alarm register pointer.
 }
 }   // namespace firmware
 }   // namespace biped
