@@ -234,6 +234,8 @@ ioExpanderAInterruptHandler()
      *
      *  TODO LAB 3 YOUR CODE HERE.
      */
+	if (task_handle_io_expander_a_interrupt_service_ != nullptr)
+		vTaskNotifyGiveFromISR(task_handle_io_expander_a_interrupt_service_, nullptr);
 }
 
 void IRAM_ATTR
@@ -276,6 +278,9 @@ ioExpanderBInterruptHandler()
      *
      *  TODO LAB 3 YOUR CODE HERE.
      */
+
+	if (task_handle_io_expander_b_interrupt_service_ != nullptr)
+		vTaskNotifyGiveFromISR(task_handle_io_expander_b_interrupt_service_, nullptr);
 }
 
 void IRAM_ATTR
@@ -339,6 +344,8 @@ timerInterruptHandler(void* arg)
      *
      *  TODO LAB 3 YOUR CODE HERE.
      */
+    if (task_handle_real_time_ != nullptr)
+    	vTaskNotifyGiveFromISR(task_handle_real_time_, nullptr);
 
     /*
      *  If the timer global shared pointer is not a null pointer,
