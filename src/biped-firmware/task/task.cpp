@@ -563,9 +563,11 @@ realTimeTask(void* pvParameters)
          *
          *  TODO LAB 3 YOUR CODE HERE.
          */
+        delayMicroseconds(1000);
         unsigned long exec_time = micros() - time_point_start;
         execution_time_real_time_task_ = exec_time;
         time_point_start = exec_time;
+
 
     }
 

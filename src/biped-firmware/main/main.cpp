@@ -350,19 +350,19 @@ setup()
      */
 
 	 xTaskCreatePinnedToCore(networkTask, "networkTask", TaskParameter::stack_size,
-			 nullptr, TaskParameter::priority_max-1, &task_handle_network_, 1);
+			 nullptr, TaskParameter::priority_min, &task_handle_network_, 1);
 
 	 xTaskCreatePinnedToCore(realTimeTask, "realTimeTask", TaskParameter::stack_size,
 			 nullptr, TaskParameter::priority_max-1, &task_handle_real_time_, 1);
 
 	 xTaskCreatePinnedToCore(udpReadBipedMessageTask, "udpReadBipedMessageTask", TaskParameter::stack_size,
-			 nullptr, TaskParameter::priority_max-1, &task_handle_udp_read_biped_message_, 1);
+			 nullptr, TaskParameter::priority_min, &task_handle_udp_read_biped_message_, 1);
 
 	 xTaskCreatePinnedToCore(udpWriteBipedMessageTask, "udpWriteBipedMessageTask", TaskParameter::stack_size,
-			 nullptr, TaskParameter::priority_max-1, &task_handle_udp_write_biped_message_, 1);
+			 nullptr, TaskParameter::priority_min, &task_handle_udp_write_biped_message_, 1);
 
 	 xTaskCreatePinnedToCore(udpWriteCameraTask, "udpWriteCameraTask", TaskParameter::stack_size,
-			 nullptr, TaskParameter::priority_max-1, &task_handle_udp_write_camera_, 1);
+			 nullptr, TaskParameter::priority_min, &task_handle_udp_write_camera_, 1);
     /*
      *  Using the timer global shared pointer, set the hardware timer interval to be the fast
      *  domain period. Be aware of the unit conversions and use the appropriate functions
