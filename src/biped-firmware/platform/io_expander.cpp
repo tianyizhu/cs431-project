@@ -40,6 +40,7 @@ IOExpander::IOExpander(const uint8_t& address) :
      *
      *  TODO LAB 4 YOUR CODE HERE.
      */
+    mcp23018_ = std::make_shared<MCP23018>();
 
     /*
      *  Initialize Arduino I/O expander driver object.
@@ -48,6 +49,7 @@ IOExpander::IOExpander(const uint8_t& address) :
      *
      *  TODO LAB 4 YOUR CODE HERE.
      */
+    mcp23018_->begin();
 
     /*
      *  Using the class member Arduino I/O expander driver shared pointer and
@@ -63,6 +65,7 @@ IOExpander::IOExpander(const uint8_t& address) :
      *
      *  TODO LAB 4 YOUR CODE HERE.
      */
+    mcp23018_->writeToRegister(IOCON, IOCON_MIRROR | IOCON_INTPOL | IOCON_INTCC);
 
     /*
      *  Using the class member Arduino I/O expander driver shared pointer and
@@ -81,6 +84,9 @@ IOExpander::IOExpander(const uint8_t& address) :
      *  TODO LAB 4 YOUR CODE HERE.
      */
 
+    // for each bit: 1 is input, 0 is output.
+    mcp23018_->SetDirections(0xFF, 0xFF);
+
     /*
      *  Using the class member Arduino I/O expander driver shared pointer and
      *  the Arduino I/O expander driver SetPullups function in the MCP23018
@@ -97,6 +103,7 @@ IOExpander::IOExpander(const uint8_t& address) :
      *
      *  TODO LAB 4 YOUR CODE HERE.
      */
+    mcp23018_->SetPullups(1, 1);
 
     /*
      *  Using the class member Arduino I/O expander driver shared pointer and
@@ -119,6 +126,9 @@ IOExpander::IOExpander(const uint8_t& address) :
      *
      *  TODO LAB 4 YOUR CODE HERE.
      */
+
+    // should switch to INTENB after first writing to INTENA
+    mcp23018_->writePairToRegister(INTENA, 0x00, 0x00);
 }
 
 std::shared_ptr<MCP23018>
@@ -129,7 +139,7 @@ IOExpander::get() const
      *
      *  TODO LAB 4 YOUR CODE HERE.
      */
-    return nullptr;
+    return mcp23018_;
 }
 
 MCP23018*
@@ -144,7 +154,7 @@ IOExpander::getRaw() const
      *
      *  TODO LAB 4 YOUR CODE HERE.
      */
-    return nullptr;
+    return mcp23018_.get();
 }
 
 void
@@ -160,6 +170,11 @@ IOExpander::attachInterruptPortA(const uint8_t& pin, void
      *
      *  TODO LAB 4 YOUR CODE HERE.
      */
+    if(mode == DISABLED)
+    {
+        detachInterrupt(pin);
+        return;
+    }
 
     /*
      *  Validate the given pin.
@@ -180,6 +195,10 @@ IOExpander::attachInterruptPortA(const uint8_t& pin, void
      *
      *  TODO LAB 4 YOUR CODE HERE.
      */
+
+    interrupt_handlers_port_a_[pin].handler = handler;
+    interrupt_handlers_port_a_[pin].arg = arg;
+    interrupt_handlers_port_a_[pin].mode = mode;
 
     /*
      *  Switch on the given interrupt mode.
@@ -222,6 +241,9 @@ IOExpander::attachInterruptPortA(const uint8_t& pin, void
              *  TODO LAB 4 YOUR CODE HERE.
              */
 
+            // set register[pin] to 0 (compare to previous value)
+            mcp23018_->setBitInRegister(INTCONA, pin, 0);
+
             break;
         }
         case ONLOW:
@@ -259,6 +281,9 @@ IOExpander::attachInterruptPortA(const uint8_t& pin, void
              *  TODO LAB 4 YOUR CODE HERE.
              */
 
+            // set register[pin] to 1 (compare to DEFVAL[pin])
+            mcp23018_->setBitInRegister(INTCONA, pin, 1);
+
             /*
              *  Using the class member Arduino I/O expander driver shared pointer and
              *  the Arduino I/O expander driver setBitInRegister function in the
@@ -290,6 +315,7 @@ IOExpander::attachInterruptPortA(const uint8_t& pin, void
              *
              *  TODO LAB 4 YOUR CODE HERE.
              */
+            mcp23018_->setBitInRegister(DEFVALA, pin, 1);
 
             break;
         }
@@ -326,7 +352,8 @@ IOExpander::attachInterruptPortA(const uint8_t& pin, void
              *  https://ww1.microchip.com/downloads/en/devicedoc/22103a.pdf
              *
              *  TODO LAB 4 YOUR CODE HERE.
-             */
+             */\
+             mcp23018_->setBitInRegister(INTCONA, pin, 1);
 
             /*
              *  Using the class member Arduino I/O expander driver shared pointer and
@@ -359,6 +386,7 @@ IOExpander::attachInterruptPortA(const uint8_t& pin, void
              *
              *  TODO LAB 4 YOUR CODE HERE.
              */
+             mcp23018_->setBitInRegister(DEFVALA, pin, 0);
 
             break;
         }
@@ -392,6 +420,7 @@ IOExpander::attachInterruptPortA(const uint8_t& pin, void
      *
      *  TODO LAB 4 YOUR CODE HERE.
      */
+    mcp23018_->setBitInRegister(INTENA, pin, 1);
 }
 
 void
@@ -407,6 +436,11 @@ IOExpander::attachInterruptPortB(const uint8_t& pin, void
      *
      *  TODO LAB 4 YOUR CODE HERE.
      */
+    if(mode == DISABLED)
+    {
+        detachInterrupt(pin);
+        return;
+    }
 
     /*
      *  Validate the given pin.
@@ -427,6 +461,10 @@ IOExpander::attachInterruptPortB(const uint8_t& pin, void
      *
      *  TODO LAB 4 YOUR CODE HERE.
      */
+
+    interrupt_handlers_port_b_[pin].handler = handler;
+    interrupt_handlers_port_b_[pin].arg = arg;
+    interrupt_handlers_port_b_[pin].mode = mode;
 
     /*
      *  Switch on the given interrupt mode.
@@ -469,6 +507,8 @@ IOExpander::attachInterruptPortB(const uint8_t& pin, void
              *  TODO LAB 4 YOUR CODE HERE.
              */
 
+            mcp23018_->setBitInRegister(INTCONB, pin, 0);
+
             break;
         }
         case ONLOW:
@@ -506,6 +546,8 @@ IOExpander::attachInterruptPortB(const uint8_t& pin, void
              *  TODO LAB 4 YOUR CODE HERE.
              */
 
+            mcp23018_->setBitInRegister(INTCONB, pin, 1);
+
             /*
              *  Using the class member Arduino I/O expander driver shared pointer and
              *  the Arduino I/O expander driver setBitInRegister function in the
@@ -537,6 +579,8 @@ IOExpander::attachInterruptPortB(const uint8_t& pin, void
              *
              *  TODO LAB 4 YOUR CODE HERE.
              */
+
+            mcp23018_->setBitInRegister(DEFVALB, pin, 1);
 
             break;
         }
@@ -575,6 +619,8 @@ IOExpander::attachInterruptPortB(const uint8_t& pin, void
              *  TODO LAB 4 YOUR CODE HERE.
              */
 
+            mcp23018_->setBitInRegister(INTCONB, pin, 1);
+
             /*
              *  Using the class member Arduino I/O expander driver shared pointer and
              *  the Arduino I/O expander driver setBitInRegister function in the
@@ -606,6 +652,8 @@ IOExpander::attachInterruptPortB(const uint8_t& pin, void
              *
              *  TODO LAB 4 YOUR CODE HERE.
              */
+
+            mcp23018_->setBitInRegister(DEFVALB, pin, 0);
 
             break;
         }
@@ -639,6 +687,8 @@ IOExpander::attachInterruptPortB(const uint8_t& pin, void
      *
      *  TODO LAB 4 YOUR CODE HERE.
      */
+
+    mcp23018_->setBitInRegister(INTENB, pin, 1);
 }
 
 void
@@ -674,6 +724,8 @@ IOExpander::detachInterruptPortA(const uint8_t& pin)
      *  TODO LAB 4 YOUR CODE HERE.
      */
 
+    mcp23018_->setBitInRegister(INTENA, pin, 0);
+
     /*
      *  Unregister the interrupt handler by setting the interrupt handler
      *  function pointer and the interrupt handler function argument pointer
@@ -691,6 +743,10 @@ IOExpander::detachInterruptPortA(const uint8_t& pin)
      *
      *  TODO LAB 4 YOUR CODE HERE.
      */
+
+    interrupt_handlers_port_a_[pin].handler = nullptr;
+    interrupt_handlers_port_a_[pin].arg = nullptr;
+    interrupt_handlers_port_a_[pin].mode = DISABLED;
 }
 
 void
@@ -725,6 +781,7 @@ IOExpander::detachInterruptPortB(const uint8_t& pin)
      *
      *  TODO LAB 4 YOUR CODE HERE.
      */
+    mcp23018_->setBitInRegister(INTENB, pin, 0);
 
     /*
      *  Unregister the interrupt handler by setting the interrupt handler
@@ -743,6 +800,10 @@ IOExpander::detachInterruptPortB(const uint8_t& pin)
      *
      *  TODO LAB 4 YOUR CODE HERE.
      */
+
+    interrupt_handlers_port_b_[pin].handler = nullptr;
+    interrupt_handlers_port_b_[pin].arg = nullptr;
+    interrupt_handlers_port_b_[pin].mode = DISABLED;
 }
 
 void
@@ -771,6 +832,7 @@ IOExpander::pinModePortA(const uint8_t& pin, const uint8_t& mode)
              *
              *  TODO LAB 4 YOUR CODE HERE.
              */
+            mcp23018_->setBitInRegister(IODIRA, pin, 1);
 
             /*
              *  Using the class member Arduino I/O expander driver shared pointer and
@@ -792,6 +854,7 @@ IOExpander::pinModePortA(const uint8_t& pin, const uint8_t& mode)
              *
              *  TODO LAB 4 YOUR CODE HERE.
              */
+            mcp23018_->setBitInRegister(GPPUA, pin, 0);
 
             break;
         }
@@ -816,6 +879,7 @@ IOExpander::pinModePortA(const uint8_t& pin, const uint8_t& mode)
              *
              *  TODO LAB 4 YOUR CODE HERE.
              */
+            mcp23018_->setBitInRegister(IODIRA, pin, 1);
 
             /*
              *  Using the class member Arduino I/O expander driver shared pointer and
@@ -837,6 +901,7 @@ IOExpander::pinModePortA(const uint8_t& pin, const uint8_t& mode)
              *
              *  TODO LAB 4 YOUR CODE HERE.
              */
+            mcp23018_->setBitInRegister(GPPUA, pin, 1);
 
             break;
         }
@@ -861,6 +926,7 @@ IOExpander::pinModePortA(const uint8_t& pin, const uint8_t& mode)
              *
              *  TODO LAB 4 YOUR CODE HERE.
              */
+            mcp23018_->setBitInRegister(IODIRA, pin, 0);
 
             /*
              *  Using the class member Arduino I/O expander driver shared pointer and
@@ -882,6 +948,7 @@ IOExpander::pinModePortA(const uint8_t& pin, const uint8_t& mode)
              *
              *  TODO LAB 4 YOUR CODE HERE.
              */
+            mcp23018_->setBitInRegister(GPPUA, pin, 1);
 
             break;
         }
@@ -922,6 +989,7 @@ IOExpander::pinModePortB(const uint8_t& pin, const uint8_t& mode)
              *
              *  TODO LAB 4 YOUR CODE HERE.
              */
+            mcp23018_->setBitInRegister(IODIRB, pin, 1);
 
             /*
              *  Using the class member Arduino I/O expander driver shared pointer and
@@ -943,6 +1011,7 @@ IOExpander::pinModePortB(const uint8_t& pin, const uint8_t& mode)
              *
              *  TODO LAB 4 YOUR CODE HERE.
              */
+            mcp23018_->setBitInRegister(GPPUB, pin, 0);
 
             break;
         }
@@ -967,6 +1036,7 @@ IOExpander::pinModePortB(const uint8_t& pin, const uint8_t& mode)
              *
              *  TODO LAB 4 YOUR CODE HERE.
              */
+            mcp23018_->setBitInRegister(IODIRB, pin, 1);
 
             /*
              *  Using the class member Arduino I/O expander driver shared pointer and
@@ -988,6 +1058,7 @@ IOExpander::pinModePortB(const uint8_t& pin, const uint8_t& mode)
              *
              *  TODO LAB 4 YOUR CODE HERE.
              */
+            mcp23018_->setBitInRegister(GPPUB, pin, 1);
 
             break;
         }
@@ -1012,6 +1083,7 @@ IOExpander::pinModePortB(const uint8_t& pin, const uint8_t& mode)
              *
              *  TODO LAB 4 YOUR CODE HERE.
              */
+            mcp23018_->setBitInRegister(IODIRB, pin, 0);
 
             /*
              *  Using the class member Arduino I/O expander driver shared pointer and
@@ -1033,6 +1105,7 @@ IOExpander::pinModePortB(const uint8_t& pin, const uint8_t& mode)
              *
              *  TODO LAB 4 YOUR CODE HERE.
              */
+            mcp23018_->setBitInRegister(GPPUB, pin, 1);
 
             break;
         }
@@ -1073,6 +1146,7 @@ IOExpander::digitalReadPortA(const uint8_t& pin)
      *
      *  TODO LAB 4 YOUR CODE HERE.
      */
+    uint8_t pin_states_A = static_cast<uint8_t>(mcp23018_->GetPortA());
 
     /*
      *  Extract and return the state of the given pin from the 8-bit pin states
@@ -1088,7 +1162,7 @@ IOExpander::digitalReadPortA(const uint8_t& pin)
      *
      *  TODO LAB 4 YOUR CODE HERE.
      */
-    return false;
+    return static_cast<bool>(pin_states_A & (0x1 << pin));
 }
 
 bool
@@ -1117,6 +1191,7 @@ IOExpander::digitalReadPortB(const uint8_t& pin)
      *
      *  TODO LAB 4 YOUR CODE HERE.
      */
+    uint8_t pin_states_B = static_cast<uint8_t>(mcp23018_->GetPortB());
 
     /*
      *  Extract and return the state of the given pin from the 8-bit pin states
@@ -1132,7 +1207,7 @@ IOExpander::digitalReadPortB(const uint8_t& pin)
      *
      *  TODO LAB 4 YOUR CODE HERE.
      */
-    return false;
+    return static_cast<bool>(pin_states_B & (0x1 << pin));
 }
 
 void
@@ -1147,6 +1222,8 @@ IOExpander::digitalWritePortA(const uint8_t& pin, const bool& state)
      *
      *  TODO LAB 4 YOUR CODE HERE.
      */
+
+    mcp23018_->SetAPin(pin, state);
 }
 
 void
@@ -1161,6 +1238,8 @@ IOExpander::digitalWritePortB(const uint8_t& pin, const bool& state)
      *
      *  TODO LAB 4 YOUR CODE HERE.
      */
+
+    mcp23018_->SetBPin(pin, state);
 }
 
 void IRAM_ATTR
@@ -1182,6 +1261,7 @@ IOExpander::onInterrupt()
      *
      *  TODO LAB 4 YOUR CODE HERE.
      */
+    lock_wire_.lock();
 
     /*
      *  Using the class member Arduino I/O expander driver shared pointer and
@@ -1211,6 +1291,7 @@ IOExpander::onInterrupt()
      *
      *  TODO LAB 4 YOUR CODE HERE.
      */
+    uint16_t int_flags = static_cast<uint16_t>(mcp23018_->readPairFromRegister(INTFA));
 
     /*
      *  Using the class member Arduino I/O expander driver shared pointer and
@@ -1233,7 +1314,7 @@ IOExpander::onInterrupt()
      *  as the readPairFromRegister function internally extrapolates the port B
      *  register address from the given port A register address.
      *
-     *  Remember the interrupt clearing control bit (IOCON_INTCC) set to the I/O
+     *  Remember thexpandere interrupt clearing control bit (IOCON_INTCC) set to the I/O
      *  expander control register (IOCON) in the constructor. With INTCC set, the
      *  I/O expander interrupt is cleared when the INTCAP register is read.
      *  Therefore, the I/O expander interrupt is cleared beyond this line.
@@ -1245,6 +1326,7 @@ IOExpander::onInterrupt()
      *
      *  TODO LAB 4 YOUR CODE HERE.
      */
+    uint16_t int_captures = static_cast<uint16_t>(mcp23018_->readPairFromRegister(INTCAPA));
 
     /*
      *  Unlock the global I2C driver mutex lock after the I/O expander register reads
@@ -1261,6 +1343,8 @@ IOExpander::onInterrupt()
      *  TODO LAB 4 YOUR CODE HERE.
      */
 
+    lock_wire_.unlock();
+
     /*
      *  Split the 16-bit interrupt flags read above into two 8-bit unsigned integers
      *  (uint8_t), one for port A and one for port B. The lower 8 bits of the 16-bit
@@ -1270,6 +1354,9 @@ IOExpander::onInterrupt()
      *
      *  TODO LAB 4 YOUR CODE HERE.
      */
+
+    uint8_t A_flags = static_cast<uint8_t>(int_flags & 0xFF);
+    uint8_t B_flags = static_cast<uint8_t>((int_flags & 0xFF00) >> 8);
 
     /*
      *  Split the 16-bit interrupt captures read above into two 8-bit unsigned integers
@@ -1281,6 +1368,9 @@ IOExpander::onInterrupt()
      *
      *  TODO LAB 4 YOUR CODE HERE.
      */
+
+    uint8_t A_captures = static_cast<uint8_t>(int_captures & 0xFF);
+    uint8_t B_captures = static_cast<uint8_t>((int_captures & 0xFF00) >> 8);
 
     /*
      *  Service the port A and port B interrupts using the split 8-bit values above and
@@ -1308,6 +1398,7 @@ IOExpander::serviceInterrupt(const uint8_t& flags, const uint8_t& captures,
          *
          *  TODO LAB 4 YOUR CODE HERE.
          */
+        if(!(flags & pin_mask)) continue;
 
         /*
          *  If the interrupt handler function pointer for the current pin in the given
@@ -1317,6 +1408,8 @@ IOExpander::serviceInterrupt(const uint8_t& flags, const uint8_t& captures,
          *
          *  TODO LAB 4 YOUR CODE HERE.
          */
+
+        if(interrupt_handlers[pin].handler == nullptr) continue;
 
         /*
          *  Switch on interrupt mode.
@@ -1340,6 +1433,11 @@ IOExpander::serviceInterrupt(const uint8_t& flags, const uint8_t& captures,
                  *  TODO LAB 4 YOUR CODE HERE.
                  */
 
+                if(captures & pin_mask)
+                {
+                    interrupt_handlers[pin].handler(interrupt_handlers[pin].arg);
+                }
+
                 break;
             }
             case FALLING:
@@ -1358,6 +1456,10 @@ IOExpander::serviceInterrupt(const uint8_t& flags, const uint8_t& captures,
                  *
                  *  TODO LAB 4 YOUR CODE HERE.
                  */
+                if(!(captures & pin_mask))
+                {
+                    interrupt_handlers[pin].handler(interrupt_handlers[pin].arg);
+                }
 
                 break;
             }
@@ -1380,6 +1482,8 @@ IOExpander::serviceInterrupt(const uint8_t& flags, const uint8_t& captures,
                  *
                  *  TODO LAB 4 YOUR CODE HERE.
                  */
+
+                interrupt_handlers[pin].handler(interrupt_handlers[pin].arg);
 
                 break;
             }
