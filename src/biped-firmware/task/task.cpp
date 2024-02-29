@@ -250,6 +250,8 @@ ioExpanderAInterruptServiceTask(void* pvParameters)
          *
          *  TODO LAB 4 YOUR CODE HERE.
          */
+        if (io_expander_a_ != nullptr)
+        	io_expander_a_->onInterrupt();
 
         /*
          *  The I/O expander A interrupt handler has been detached by itself. Using the attachInterrupt
@@ -271,6 +273,8 @@ ioExpanderAInterruptServiceTask(void* pvParameters)
          *
          *  TODO LAB 4 YOUR CODE HERE.
          */
+
+        biped::firmware::attachInterrupt(ESP32Pin::io_expander_a_interrupt, &ioExpanderAInterruptHandler, ONHIGH);
     }
 
     /*
@@ -317,6 +321,8 @@ ioExpanderBInterruptServiceTask(void* pvParameters)
          *
          *  TODO LAB 4 YOUR CODE HERE.
          */
+        if (io_expander_b_ != nullptr)
+        	io_expander_b_->onInterrupt();
 
         /*
          *  The I/O expander B interrupt handler has been detached by itself. Using the attachInterrupt
@@ -338,6 +344,7 @@ ioExpanderBInterruptServiceTask(void* pvParameters)
          *
          *  TODO LAB 4 YOUR CODE HERE.
          */
+        biped::firmware::attachInterrupt(ESP32Pin::io_expander_b_interrupt, &ioExpanderBInterruptHandler, ONHIGH);
     }
 
     /*
@@ -563,7 +570,7 @@ realTimeTask(void* pvParameters)
          *
          *  TODO LAB 3 YOUR CODE HERE.
          */
-        delayMicroseconds(1000);
+//        delayMicroseconds(4500);
         unsigned long exec_time = micros() - time_point_start;
         execution_time_real_time_task_ = exec_time;
         time_point_start = exec_time;

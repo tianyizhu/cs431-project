@@ -218,6 +218,7 @@ ioExpanderAInterruptHandler()
      *
      *  TODO LAB 4 YOUR CODE HERE.
      */
+	detachInterrupt(ESP32Pin::io_expander_a_interrupt);
 
     /*
      *  If the I/O expander A interrupt service task handle global pointer is not
@@ -262,6 +263,7 @@ ioExpanderBInterruptHandler()
      *
      *  TODO LAB 4 YOUR CODE HERE.
      */
+	detachInterrupt(ESP32Pin::io_expander_b_interrupt);
 
     /*
      *  If the I/O expander A interrupt service task handle global pointer is not
