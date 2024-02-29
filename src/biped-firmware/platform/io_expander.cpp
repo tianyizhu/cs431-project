@@ -40,7 +40,7 @@ IOExpander::IOExpander(const uint8_t& address) :
      *
      *  TODO LAB 4 YOUR CODE HERE.
      */
-    mcp23018_ = std::make_shared<MCP23018>();
+    mcp23018_ = std::make_shared<MCP23018>(address);
 
     /*
      *  Initialize Arduino I/O expander driver object.
@@ -1378,6 +1378,9 @@ IOExpander::onInterrupt()
      *
      *  TODO LAB 4 YOUR CODE HERE.
      */
+
+    serviceInterrupt(A_flags, A_captures, interrupt_handlers_port_a_);
+    serviceInterrupt(B_flags, B_captures, interrupt_handlers_port_b_);
 }
 
 void

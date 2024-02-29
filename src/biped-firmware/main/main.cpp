@@ -334,10 +334,14 @@ setup()
      *
      *  TODO LAB 4 YOUR CODE HERE.
      */
-	 io_expander_a_->attachInterruptPortA(IOExpanderAPortAPin::push_button_a, &pushButtonAInterruptHandler, nullptr, FALLING);
+	 io_expander_a_->attachInterruptPortA(IOExpanderAPortAPin::push_button_a, &pushButtonAInterruptHandler, nullptr, ONLOW);
 	 io_expander_a_->attachInterruptPortA(IOExpanderAPortAPin::push_button_b, &pushButtonBInterruptHandler, nullptr, FALLING);
 
 	 io_expander_b_->attachInterruptPortB(IOExpanderAPortBPin::push_button_c, &pushButtonCInterruptHandler, nullptr, FALLING);
+
+	 // lab 4 demo
+	 io_expander_b_->pinModePortB(3, INPUT_PULLUP);
+	 io_expander_b_->attachInterruptPortB(3, &pushButtonAInterruptHandler, nullptr, FALLING);
 
     /*
      *  Create the real-time task, all UDP tasks, and the network task using the

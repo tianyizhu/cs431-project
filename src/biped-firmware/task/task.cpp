@@ -220,6 +220,10 @@ bestEffortTask()
      *
      *  TODO LAB 1 YOUR CODE HERE.
      */
+
+    // lab 4 demo
+    Display(6) << io_expander_a_->digitalReadPortA(IOExpanderAPortAPin::push_button_a);
+
     Display::display();
 
 }
