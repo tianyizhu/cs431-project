@@ -170,6 +170,9 @@ setup()
      *
      *  TODO LAB 5 YOUR CODE HERE.
      */
+	 wifi_ = std::make_shared<WiFi>();
+	 udp_biped_message_ = std::make_shared<biped::firmware::UDP>();
+	 udp_camera_ = std::make_shared<biped::firmware::UDP>();
 
     /*
      *  Instantiate the sensor and actuator global objects using the C++ STL
@@ -334,14 +337,14 @@ setup()
      *
      *  TODO LAB 4 YOUR CODE HERE.
      */
-	 io_expander_a_->attachInterruptPortA(IOExpanderAPortAPin::push_button_a, &pushButtonAInterruptHandler, nullptr, ONLOW);
-	 io_expander_a_->attachInterruptPortA(IOExpanderAPortAPin::push_button_b, &pushButtonBInterruptHandler, nullptr, FALLING);
+	 io_expander_a_->attachInterruptPortA(IOExpanderAPortAPin::push_button_a, pushButtonAInterruptHandler, nullptr, FALLING);
+	 io_expander_a_->attachInterruptPortA(IOExpanderAPortAPin::push_button_b, pushButtonBInterruptHandler, nullptr, FALLING);
 
-	 io_expander_b_->attachInterruptPortB(IOExpanderAPortBPin::push_button_c, &pushButtonCInterruptHandler, nullptr, FALLING);
+	 io_expander_b_->attachInterruptPortB(IOExpanderAPortBPin::push_button_c, pushButtonCInterruptHandler, nullptr, FALLING);
 
 	 // lab 4 demo
-	 io_expander_b_->pinModePortB(3, INPUT_PULLUP);
-	 io_expander_b_->attachInterruptPortB(3, &pushButtonAInterruptHandler, nullptr, FALLING);
+//	 io_expander_b_->pinModePortB(3, INPUT_PULLUP);
+//	 io_expander_b_->attachInterruptPortB(3, pushButtonAInterruptHandler, nullptr, FALLING);
 
     /*
      *  Create the real-time task, all UDP tasks, and the network task using the
