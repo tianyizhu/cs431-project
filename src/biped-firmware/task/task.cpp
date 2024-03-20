@@ -701,7 +701,7 @@ udpReadBipedMessageTask(void* pvParameters)
          */
         controller_->setControllerParameter(message_deserialized.controller_parameter);
         controller_->setControllerReference(message_deserialized.controller_reference);
-        biped::firmware::Serial(LogLevel::info) << message_deserialized.controller_parameter.pid_controller_gain_position_x.proportional;
+//        biped::firmware::Serial(LogLevel::info) << message_deserialized.controller_parameter.pid_controller_gain_position_x.proportional;
 
     }
 
