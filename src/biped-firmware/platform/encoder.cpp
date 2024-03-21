@@ -93,9 +93,9 @@ Encoder::read()
      *
      *  TODO LAB 6 YOUR CODE HERE.
      */
-	data_.steps_left = steps_left_;
+	data_.steps_left = -steps_left_;
 	data_.steps_right = steps_right_;
-	data_.steps = (steps_right_ + steps_left_)/2;
+	data_.steps = (steps_right_ - steps_left_)/2;
 	data_.position_x = data_.steps/static_cast<double>(EncoderParameter::steps_per_meter);
 
 }

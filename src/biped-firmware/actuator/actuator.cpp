@@ -65,9 +65,9 @@ Actuator::Actuator()
          *  TODO LAB 6 YOUR CODE HERE.
          */
 
-        pinMode(IOExpanderAPortBPin::motor_enable, OUTPUT);
-        pinMode(IOExpanderAPortAPin::motor_left_direction, OUTPUT);
-        pinMode(IOExpanderAPortAPin::motor_right_direction, OUTPUT);
+        io_expander_a_->pinModePortB(IOExpanderAPortBPin::motor_enable, OUTPUT);
+        io_expander_a_->pinModePortA(IOExpanderAPortAPin::motor_left_direction, OUTPUT);
+        io_expander_a_->pinModePortA(IOExpanderAPortAPin::motor_right_direction, OUTPUT);
     }
     else
     {

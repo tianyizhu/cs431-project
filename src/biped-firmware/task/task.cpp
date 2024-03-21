@@ -226,6 +226,14 @@ bestEffortTask()
 
     Display::display();
 
+        // lab 6 demo
+//    ActuationCommand cmd = ActuationCommand();
+//    cmd.motor_enable = true;
+//    cmd.motor_left_forward = true;
+//    cmd.motor_left_pwm = 128;
+//    cmd.motor_right_forward = true;
+//    cmd.motor_right_pwm = 128;
+//    actuator_->actuate(cmd);
 }
 
 void
@@ -505,8 +513,7 @@ realTimeTask(void* pvParameters)
          *
          *  TODO LAB 6 YOUR CODE HERE.
          */
-        if (sensor_)
-        	sensor_->sense(true);
+        if (sensor_) sensor_->sense(true);
 
         /*
          *  If the controller global shared pointer is not a null pointer, using the controller global
@@ -532,8 +539,7 @@ realTimeTask(void* pvParameters)
              *
              *  TODO LAB 6 YOUR CODE HERE.
              */
-            if (sensor_)
-            	sensor_->sense(false);
+            if (sensor_) sensor_->sense(false);
 
 
             /*

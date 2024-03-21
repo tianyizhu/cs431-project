@@ -49,8 +49,9 @@ Sensor::Sensor()
      *  TODO LAB 6 YOUR CODE HERE.
      */
 
-	io_expander_a_->pinModePortA(IOExpanderAPortAPin::time_of_flight_left_shutdown, INPUT_PULLUP);
-	io_expander_a_->pinModePortB(IOExpanderAPortBPin::time_of_flight_right_shutdown, INPUT_PULLUP);
+	io_expander_a_->pinModePortA(IOExpanderAPortAPin::time_of_flight_left_shutdown, OUTPUT);
+	io_expander_a_->pinModePortB(IOExpanderAPortBPin::time_of_flight_middle_shutdown, OUTPUT);
+	io_expander_a_->pinModePortB(IOExpanderAPortBPin::time_of_flight_right_shutdown, OUTPUT);
 
     /*
      *  Instantiate the class member time-of-flight objects using the C++ STL
@@ -62,8 +63,15 @@ Sensor::Sensor()
      *
      *  TODO LAB 6 YOUR CODE HERE.
      */
-	time_of_flight_left_ = std::make_unique<TimeOfFlight>(AddressParameter::io_expander_a,
-			IOExpanderAPortAPin::time_of_flight_left_shutdown, io_expander_a_);
+	time_of_flight_left_ = std::make_unique<TimeOfFlight>(AddressParameter::time_of_flight_left,
+	                                                      IOExpanderAPortAPin::time_of_flight_left_shutdown,
+	                                                      io_expander_a_);
+	time_of_flight_middle_ = std::make_unique<TimeOfFlight>(AddressParameter::time_of_flight_middle,
+	                                                        IOExpanderAPortBPin::time_of_flight_middle_shutdown,
+	                                                        io_expander_a_);
+	time_of_flight_right_ = std::make_unique<TimeOfFlight>(AddressParameter::time_of_flight_right,
+	                                                       IOExpanderAPortBPin::time_of_flight_right_shutdown,
+	                                                       io_expander_a_);
 
 }
 
@@ -164,9 +172,9 @@ Sensor::sense(const bool& fast_domain)
          *
          *  TODO LAB 6 YOUR CODE HERE.
          */
-    	time_of_flight_left_->read();
-    	time_of_flight_middle_->read();
-    	time_of_flight_right_->read();
+    	time_of_flight_data_.range_left = time_of_flight_left_->read();
+    	time_of_flight_data_.range_middle = time_of_flight_middle_->read();
+    	time_of_flight_data_.range_right = time_of_flight_right_->read();
     }
 }
 

@@ -69,7 +69,7 @@ IMU::read()
 
     if(mpu6050_.getEvent(&acceleration, &angular_velocity, &temperature) == false)
     {
-        biped::firmware::Serial(LogLevel::error) << 'Could not acquire sensor data';
+        biped::firmware::Serial(LogLevel::error) << "Could not acquire sensor data";
     }
 
     /*
@@ -131,7 +131,7 @@ IMU::initialize()
 
     if(!mpu6050_.begin(AddressParameter::imu_mpu6050))
     {
-        biped::firmware::Serial(LogLevel::error) << 'Could not initialize IMU';
+        biped::firmware::Serial(LogLevel::error) << "Could not initialize IMU";
     }
 
     /*
