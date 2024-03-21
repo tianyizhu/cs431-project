@@ -32,6 +32,7 @@ IMU::IMU()
      *
      *  TODO LAB 6 YOUR CODE HERE.
      */
+    initialize();
 }
 
 IMUData
@@ -42,7 +43,7 @@ IMU::getData() const
      *
      *  TODO LAB 6 YOUR CODE HERE.
      */
-    return IMUData();
+    return mpu6050_data_;
 }
 
 void
@@ -66,6 +67,11 @@ IMU::read()
      *  TODO LAB 6 YOUR CODE HERE.
      */
 
+    if(mpu6050_.getEvent(&acceleration, &angular_velocity, &temperature) == false)
+    {
+        biped::firmware::Serial(LogLevel::error) << 'Could not acquire sensor data';
+    }
+
     /*
      *  Using the populated MPU6050 sensor event structs, populate
      *  the corresponding entries in the class member MPU6050 IMU data
@@ -86,11 +92,27 @@ IMU::read()
      *  TODO LAB 6 YOUR CODE HERE.
      */
 
+    mpu6050_data_.acceleration_x = acceleration.acceleration.x;
+    mpu6050_data_.acceleration_y = acceleration.acceleration.y;
+    mpu6050_data_.acceleration_z = acceleration.acceleration.z;
+
+    mpu6050_data_.angular_velocity_x = angular_velocity.gyro.x;
+    mpu6050_data_.angular_velocity_y = angular_velocity.gyro.y;
+    mpu6050_data_.angular_velocity_z = angular_velocity.gyro.z;
+
+    mpu6050_data_.temperature = temperature.temperature;
+
+    mpu6050_data_.compass_x = 0.0;
+    mpu6050_data_.compass_y = 0.0;
+    mpu6050_data_.compass_z = 0.0;
+
     /*
      *  Calculate the attitude.
      *
      *  TODO LAB 6 YOUR CODE HERE.
      */
+
+    calculateAttitude();
 }
 
 void
@@ -107,6 +129,11 @@ IMU::initialize()
      *  TODO LAB 6 YOUR CODE HERE.
      */
 
+    if(!mpu6050_.begin(AddressParameter::imu_mpu6050))
+    {
+        biped::firmware::Serial(LogLevel::error) << 'Could not initialize IMU';
+    }
+
     /*
      *  Configure the Adafruit MPU6050 IMU driver object.
      */
@@ -118,6 +145,8 @@ IMU::initialize()
      *
      *  TODO LAB 6 YOUR CODE HERE.
      */
+
+    read();
 
     /*
      *  Perform initial Y attitude calculation and set the calculated
@@ -132,6 +161,11 @@ IMU::initialize()
      *
      *  TODO LAB 6 YOUR CODE HERE.
      */
+
+    mpu6050_data_.attitude_y = atan2(mpu6050_data_.acceleration_x,
+                                     sqrt(pow(mpu6050_data_.acceleration_x, 2) +
+                                          pow(mpu6050_data_.acceleration_y, 2) +
+                                          pow(mpu6050_data_.acceleration_z, 2)));
 
     /*
      *  Configure the Y attitude (pitch) Kalman filter.
@@ -177,7 +211,11 @@ IMU::calculateAttitude()
      *
      *  TODO LAB 6 YOUR CODE HERE.
      */
-    const double attitude_y_raw = 0;
+    const double attitude_y_raw = atan2(mpu6050_data_.acceleration_x,
+                                        sqrt(pow(mpu6050_data_.acceleration_x, 2) +
+                                             pow(mpu6050_data_.acceleration_y, 2) +
+                                             pow(mpu6050_data_.acceleration_z, 2)));
+
 
     /*
      *  Filter the raw Y attitude data using the Kalman filter.
@@ -193,6 +231,9 @@ IMU::calculateAttitude()
      *
      *  TODO LAB 6 YOUR CODE HERE.
      */
+
+    mpu6050_data_.attitude_y = degreesToRadians(attitude_y_kalman_filter);
+
 }
 }   // namespace firmware
 }   // namespace biped
