@@ -49,6 +49,9 @@ Sensor::Sensor()
      *  TODO LAB 6 YOUR CODE HERE.
      */
 
+	io_expander_a_->pinModePortA(IOExpanderAPortAPin::time_of_flight_left_shutdown, INPUT_PULLUP);
+	io_expander_a_->pinModePortB(IOExpanderAPortBPin::time_of_flight_right_shutdown, INPUT_PULLUP);
+
     /*
      *  Instantiate the class member time-of-flight objects using the C++ STL
      *  std::make_unique function.
@@ -59,6 +62,9 @@ Sensor::Sensor()
      *
      *  TODO LAB 6 YOUR CODE HERE.
      */
+	time_of_flight_left_ = std::make_unique<TimeOfFlight>(AddressParameter::io_expander_a,
+			IOExpanderAPortAPin::time_of_flight_left_shutdown, io_expander_a_);
+
 }
 
 EncoderData
@@ -70,7 +76,7 @@ Sensor::getEncoderData() const
      *
      *  TODO LAB 6 YOUR CODE HERE.
      */
-    return EncoderData();
+    return encoder_.getData();
 }
 
 IMUData
@@ -82,7 +88,7 @@ Sensor::getIMUData() const
      *
      *  TODO LAB 6 YOUR CODE HERE.
      */
-    return IMUData();
+    return imu_.getData();
 }
 
 TimeOfFlightData
@@ -93,7 +99,7 @@ Sensor::getTimeOfFlightData() const
      *
      *  TODO LAB 6 YOUR CODE HERE.
      */
-    return TimeOfFlightData();
+    return time_of_flight_data_;
 }
 
 void
@@ -126,6 +132,7 @@ Sensor::sense(const bool& fast_domain)
          *
          *  TODO LAB 6 YOUR CODE HERE.
          */
+    	encoder_.read();
 
         /*
          *  Perform IMU read using the class member IMU object.
@@ -134,6 +141,7 @@ Sensor::sense(const bool& fast_domain)
          *
          *  TODO LAB 6 YOUR CODE HERE.
          */
+    	imu_.read();
     }
     else
     {
@@ -144,6 +152,7 @@ Sensor::sense(const bool& fast_domain)
          *
          *  TODO LAB 6 YOUR CODE HERE.
          */
+    	encoder_.calculateVelocity();
 
         /*
          *  Perform time-of-flight reads using the class member
@@ -155,6 +164,9 @@ Sensor::sense(const bool& fast_domain)
          *
          *  TODO LAB 6 YOUR CODE HERE.
          */
+    	time_of_flight_left_->read();
+    	time_of_flight_middle_->read();
+    	time_of_flight_right_->read();
     }
 }
 
@@ -169,7 +181,9 @@ Sensor::onEncoderLeftA()
      *
      *  TODO LAB 6 YOUR CODE HERE.
      */
+	encoder_.onLeftA();
 }
+
 
 void IRAM_ATTR
 Sensor::onEncoderLeftB()
@@ -182,6 +196,7 @@ Sensor::onEncoderLeftB()
      *
      *  TODO LAB 6 YOUR CODE HERE.
      */
+	encoder_.onLeftB();
 }
 
 void IRAM_ATTR
@@ -195,6 +210,8 @@ Sensor::onEncoderRightA()
      *
      *  TODO LAB 6 YOUR CODE HERE.
      */
+
+	encoder_.onRightA();
 }
 
 void IRAM_ATTR
@@ -208,6 +225,7 @@ Sensor::onEncoderRightB()
      *
      *  TODO LAB 6 YOUR CODE HERE.
      */
+	encoder_.onRightB();
 }
 }   // namespace firmware
 }   // namespace biped

@@ -49,6 +49,10 @@ Encoder::Encoder() : steps_left_(0), steps_right_(0)
      *
      *  TODO LAB 6 YOUR CODE HERE.
      */
+	pinMode(ESP32Pin::motor_left_encoder_a, INPUT_PULLUP);
+	pinMode(ESP32Pin::motor_left_encoder_b, INPUT_PULLUP);
+	pinMode(ESP32Pin::motor_right_encoder_a, INPUT_PULLUP);
+	pinMode(ESP32Pin::motor_right_encoder_b, INPUT_PULLUP);
 
     /*
      *  Configure X velocity low-pass filter.
@@ -64,7 +68,7 @@ Encoder::getData() const
      *
      *  TODO LAB 6 YOUR CODE HERE.
      */
-    return EncoderData();
+    return data_;
 }
 
 void
@@ -89,6 +93,11 @@ Encoder::read()
      *
      *  TODO LAB 6 YOUR CODE HERE.
      */
+	data_.steps_left = steps_left_;
+	data_.steps_right = steps_right_;
+	data_.steps = (steps_right_ + steps_left_)/2;
+	data_.position_x = data_.steps/static_cast<double>(EncoderParameter::steps_per_meter);
+
 }
 
 void
@@ -104,6 +113,7 @@ Encoder::calculateVelocity()
      *
      *  TODO LAB 6 YOUR CODE HERE.
      */
+    Encoder::read();
 
     /*
      *  Using the current overall encoder steps in the class member
@@ -120,6 +130,9 @@ Encoder::calculateVelocity()
      *
      *  TODO LAB 6 YOUR CODE HERE.
      */
+    float distance = (data_.steps - steps_last)/static_cast<double>(EncoderParameter::steps_per_meter);
+    float speed = distance/PeriodParameter::slow;
+    data_.velocity_x = low_pass_filter_velocity_x_.filter(speed);
 
     /*
      *  Update the last overall encoder steps local variable to be the current
@@ -127,6 +140,7 @@ Encoder::calculateVelocity()
      *
      *  TODO LAB 6 YOUR CODE HERE.
      */
+    steps_last = data_.steps;
 }
 
 void IRAM_ATTR
@@ -141,6 +155,14 @@ Encoder::onLeftA()
      *
      *  TODO LAB 6 YOUR CODE HERE.
      */
+	int AStatus = digitalReadFromISR(ESP32Pin::motor_left_encoder_a);
+	int BStatus = digitalReadFromISR(ESP32Pin::motor_left_encoder_b);
+
+	if (AStatus == BStatus)
+		steps_left_ += 1;
+	else
+		steps_left_ -= 1;
+
 }
 
 void IRAM_ATTR
@@ -155,6 +177,14 @@ Encoder::onLeftB()
      *
      *  TODO LAB 6 YOUR CODE HERE.
      */
+	int AStatus = digitalReadFromISR(ESP32Pin::motor_left_encoder_a);
+	int BStatus = digitalReadFromISR(ESP32Pin::motor_left_encoder_b);
+
+	if (AStatus != BStatus)
+		steps_left_ += 1;
+	else
+		steps_left_ -= 1;
+
 }
 
 void IRAM_ATTR
@@ -169,6 +199,14 @@ Encoder::onRightA()
      *
      *  TODO LAB 6 YOUR CODE HERE.
      */
+
+	int AStatus = digitalReadFromISR(ESP32Pin::motor_right_encoder_a);
+	int BStatus = digitalReadFromISR(ESP32Pin::motor_right_encoder_b);
+
+	if (AStatus == BStatus)
+		steps_right_ += 1;
+	else
+		steps_right_ -= 1;
 }
 
 void IRAM_ATTR
@@ -183,6 +221,13 @@ Encoder::onRightB()
      *
      *  TODO LAB 6 YOUR CODE HERE.
      */
+	int AStatus = digitalReadFromISR(ESP32Pin::motor_right_encoder_a);
+	int BStatus = digitalReadFromISR(ESP32Pin::motor_right_encoder_b);
+
+	if (AStatus != BStatus)
+		steps_right_ += 1;
+	else
+		steps_right_ -= 1;
 }
 }   // namespace firmware
 }   // namespace biped

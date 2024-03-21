@@ -182,6 +182,7 @@ setup()
      *
      *  TODO LAB 6 YOUR CODE HERE.
      */
+	 sensor_ = std::make_shared<Sensor>();
 
     /*
      *  Instantiate the controller object using the C++ STL std::make_shared
@@ -297,6 +298,8 @@ setup()
      *
      *  TODO LAB 6 YOUR CODE HERE.
      */
+	 biped::firmware::attachInterrupt(ESP32Pin::motor_left_encoder_a, &encoderLeftAInterruptHandler, CHANGE);
+
 
     /*
      *  Using I/O expander global shared pointers and the I/O expander pinModePort
