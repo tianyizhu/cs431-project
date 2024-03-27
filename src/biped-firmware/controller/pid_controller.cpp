@@ -14,6 +14,7 @@
 #include "controller/pid_controller.h"
 #include "platform/serial.h"
 #include "utility/math.h"
+//#include "common/global.h"
 
 /*
  *  Biped namespace.
@@ -25,6 +26,7 @@ namespace biped
  */
 namespace firmware
 {
+
 PIDController::PIDController() : state_(0), reference_(0), period_(0), error_differential_(0),
         error_integral_(0)
 {
@@ -38,7 +40,7 @@ PIDController::getReference() const
      *
      *  TODO LAB 7 YOUR CODE HERE.
      */
-    return 0;
+    return reference_;
 }
 
 void
@@ -49,6 +51,7 @@ PIDController::setGain(const PIDControllerGain& gain)
      *
      *  TODO LAB 7 YOUR CODE HERE.
      */
+	gain_ = gain;
 
     /*
      *  The existing integrated error (integral of e)
@@ -57,7 +60,8 @@ PIDController::setGain(const PIDControllerGain& gain)
      *
      *  TODO LAB 7 YOUR CODE HERE.
      */
-}
+	error_integral_ = 0;
+} double error_differential = sensor_->getEncoderData().velocity_x;
 
 void
 PIDController::setSaturation(const ControllerSaturation& saturation)
@@ -67,6 +71,7 @@ PIDController::setSaturation(const ControllerSaturation& saturation)
      *
      *  TODO LAB 7 YOUR CODE HERE.
      */
+	saturation_ = saturation;
 }
 
 void
@@ -77,6 +82,7 @@ PIDController::setState(const double& state)
      *
      *  TODO LAB 7 YOUR CODE HERE.
      */
+	state_ = state;
 }
 
 void
@@ -87,6 +93,7 @@ PIDController::setReference(const double& reference)
      *
      *  TODO LAB 7 YOUR CODE HERE.
      */
+	reference_ = reference;
 
     /*
      *  The existing integrated error (integral of e)
@@ -95,6 +102,7 @@ PIDController::setReference(const double& reference)
      *
      *  TODO LAB 7 YOUR CODE HERE.
      */
+	error_integral_ = 0;
 }
 
 void
@@ -105,6 +113,7 @@ PIDController::setPeriod(const double& period)
      *
      *  TODO LAB 7 YOUR CODE HERE.
      */
+	period_ = period;
 
     /*
      *  The existing integrated error (integral of e)
@@ -113,6 +122,7 @@ PIDController::setPeriod(const double& period)
      *
      *  TODO LAB 7 YOUR CODE HERE.
      */
+	error_integral_ = 0;
 }
 
 void
@@ -123,6 +133,7 @@ PIDController::setErrorDifferential(const double& error_differential)
      *
      *  TODO LAB 7 YOUR CODE HERE.
      */
+	error_differential_ = error_differential;
 }
 
 void
@@ -133,6 +144,7 @@ PIDController::resetErrorIntegral()
      *
      *  TODO LAB 7 YOUR CODE HERE.
      */
+	error_integral_ = 0;
 }
 
 double
@@ -161,6 +173,7 @@ PIDController::control()
      *
      *  TODO LAB 7 YOUR CODE HERE.
      */
+    double e = clamp(state_-reference_, saturation_.input_lower, saturation_.input_upper);
 
     /*
      *  Calculate the new discrete integral of error (integral of e).
@@ -181,6 +194,8 @@ PIDController::control()
      *
      *  TODO LAB 7 YOUR CODE HERE.
      */
+    error_integral_ = clamp(error_integral_ + e*period_, -gain_.integral_max, gain_.integral_max);
+
 
     /*
      *  Calculate the proportional output using the current error (e).
@@ -189,6 +204,8 @@ PIDController::control()
      *
      *  TODO LAB 7 YOUR CODE HERE.
      */
+    double P_gain = e*gain_.proportional;
+
 
     /*
      *  Calculate the integral output using the new discrete integral
@@ -198,6 +215,7 @@ PIDController::control()
      *
      *  TODO LAB 7 YOUR CODE HERE.
      */
+    double I_gain = error_integral_ * gain_.integral;
 
     /*
      *  Calculate the differential output using the class member
@@ -220,6 +238,10 @@ PIDController::control()
      *
      *  TODO LAB 7 YOUR CODE HERE.
      */
+    double D_gain = gain_.differential * error_differential_;
+
+
+
 
     /*
      *  Sum up all of the above proportional, integral, and
@@ -227,6 +249,8 @@ PIDController::control()
      *
      *  TODO LAB 7 YOUR CODE HERE.
      */
+    double gain_sum = D_gain + P_gain + I_gain;
+
 
     /*
      *  Using the clamp function in the math header, return the
@@ -236,7 +260,7 @@ PIDController::control()
      *
      *  TODO LAB 7 YOUR CODE HERE.
      */
-    return 0;
+    return clamp(gain_sum, saturation_.output_lower, saturation_.output_upper);
 }
 }   // namespace firmware
 }   // namespace biped
