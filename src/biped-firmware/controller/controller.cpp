@@ -330,7 +330,8 @@ Controller::setControllerParameter(const ControllerParameter& controller_paramet
      *  TODO LAB 7 YOUR CODE HERE.
      */
 
-    open_loop_controller_attitude_z_ = controller_parameter_.attitude_z_gain_open_loop;
+    open_loop_controller_attitude_z_.setGain(controller_parameter_.attitude_z_gain_open_loop);
+
 
     /*
      *  Set the PID controller gain structs in the class member controller
@@ -342,6 +343,7 @@ Controller::setControllerParameter(const ControllerParameter& controller_paramet
     pid_controller_attitude_y_.setGain(controller_parameter_.pid_controller_gain_attitude_y);
     pid_controller_attitude_z_.setGain(controller_parameter_.pid_controller_gain_attitude_z);
     pid_controller_position_x_.setGain(controller_parameter_.pid_controller_gain_position_x);
+
 
     /*
      *  Set the controller saturation structs in the class member controller

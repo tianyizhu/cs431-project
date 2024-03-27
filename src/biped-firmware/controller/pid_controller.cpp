@@ -61,7 +61,8 @@ PIDController::setGain(const PIDControllerGain& gain)
      *  TODO LAB 7 YOUR CODE HERE.
      */
 	error_integral_ = 0;
-} double error_differential = sensor_->getEncoderData().velocity_x;
+}
+
 
 void
 PIDController::setSaturation(const ControllerSaturation& saturation)
