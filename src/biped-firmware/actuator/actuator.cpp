@@ -123,7 +123,7 @@ Actuator::actuate(const ActuationCommand& actuation_command)
      *  TODO LAB 6 YOUR CODE HERE.
      */
 
-    io_expander_a_->digitalWritePortA(IOExpanderAPortAPin::motor_left_direction, actuation_command_.motor_left_forward);
+    io_expander_a_->digitalWritePortA(IOExpanderAPortAPin::motor_left_direction, !actuation_command_.motor_left_forward);
     io_expander_a_->digitalWritePortA(IOExpanderAPortAPin::motor_right_direction, actuation_command_.motor_right_forward);
 
     /*
@@ -156,11 +156,11 @@ Actuator::actuate(const ActuationCommand& actuation_command)
      *  TODO LAB 6 YOUR CODE HERE.
      */
 
-    digitalWrite(ESP32Pin::motor_left_pwm,
+    analogWrite(ESP32Pin::motor_left_pwm,
                  clamp(static_cast<double>(actuation_command_.motor_left_pwm),
                        MotorParameter::pwm_min,
                        MotorParameter::pwm_max));
-    digitalWrite(ESP32Pin::motor_right_pwm,
+    analogWrite(ESP32Pin::motor_right_pwm,
                  clamp(static_cast<double>(actuation_command_.motor_right_pwm),
                        MotorParameter::pwm_min,
                        MotorParameter::pwm_max));

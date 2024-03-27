@@ -225,15 +225,6 @@ bestEffortTask()
 //    Display(6) << io_expander_a_->digitalReadPortA(IOExpanderAPortAPin::push_button_a);
 
     Display::display();
-
-        // lab 6 demo
-//    ActuationCommand cmd = ActuationCommand();
-//    cmd.motor_enable = true;
-//    cmd.motor_left_forward = true;
-//    cmd.motor_left_pwm = 128;
-//    cmd.motor_right_forward = true;
-//    cmd.motor_right_pwm = 128;
-//    actuator_->actuate(cmd);
 }
 
 void
@@ -599,7 +590,14 @@ realTimeTask(void* pvParameters)
         execution_time_real_time_task_ = exec_time;
         time_point_start = exec_time;
 
-
+        // lab 6 demo
+        ActuationCommand cmd = ActuationCommand();
+        cmd.motor_enable = true;
+        cmd.motor_left_forward = true;
+        cmd.motor_left_pwm = 128;
+        cmd.motor_right_forward = true;
+        cmd.motor_right_pwm = 128;
+        actuator_->actuate(cmd);
     }
 
     /*
@@ -616,6 +614,7 @@ realTimeTask(void* pvParameters)
      *
      *  TODO LAB 3 YOUR CODE HERE.
      */
+
     vTaskDelete(nullptr);
 }
 

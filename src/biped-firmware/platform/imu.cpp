@@ -93,12 +93,12 @@ IMU::read()
      */
 
     mpu6050_data_.acceleration_x = acceleration.acceleration.x;
-    mpu6050_data_.acceleration_y = acceleration.acceleration.y;
+    mpu6050_data_.acceleration_y = -acceleration.acceleration.y;
     mpu6050_data_.acceleration_z = acceleration.acceleration.z;
 
-    mpu6050_data_.angular_velocity_x = angular_velocity.gyro.x;
+    mpu6050_data_.angular_velocity_x = -angular_velocity.gyro.x;
     mpu6050_data_.angular_velocity_y = angular_velocity.gyro.y;
-    mpu6050_data_.angular_velocity_z = angular_velocity.gyro.z;
+    mpu6050_data_.angular_velocity_z = -angular_velocity.gyro.z;
 
     mpu6050_data_.temperature = temperature.temperature;
 
@@ -162,10 +162,8 @@ IMU::initialize()
      *  TODO LAB 6 YOUR CODE HERE.
      */
 
-    mpu6050_data_.attitude_y = atan2(mpu6050_data_.acceleration_x,
-                                     sqrt(pow(mpu6050_data_.acceleration_x, 2) +
-                                          pow(mpu6050_data_.acceleration_y, 2) +
-                                          pow(mpu6050_data_.acceleration_z, 2)));
+    mpu6050_data_.attitude_y = -atan2(mpu6050_data_.acceleration_x,
+                                      mpu6050_data_.acceleration_z);
 
     /*
      *  Configure the Y attitude (pitch) Kalman filter.
@@ -211,11 +209,8 @@ IMU::calculateAttitude()
      *
      *  TODO LAB 6 YOUR CODE HERE.
      */
-    const double attitude_y_raw = atan2(mpu6050_data_.acceleration_x,
-                                        sqrt(pow(mpu6050_data_.acceleration_x, 2) +
-                                             pow(mpu6050_data_.acceleration_y, 2) +
-                                             pow(mpu6050_data_.acceleration_z, 2)));
-
+    const double attitude_y_raw = -atan2(mpu6050_data_.acceleration_x,
+                                         mpu6050_data_.acceleration_z);
 
     /*
      *  Filter the raw Y attitude data using the Kalman filter.

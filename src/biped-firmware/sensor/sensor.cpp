@@ -67,10 +67,10 @@ Sensor::Sensor()
 	                                                      IOExpanderAPortAPin::time_of_flight_left_shutdown,
 	                                                      io_expander_a_);
 	time_of_flight_middle_ = std::make_unique<TimeOfFlight>(AddressParameter::time_of_flight_middle,
-	                                                        IOExpanderAPortBPin::time_of_flight_middle_shutdown,
+	                                                        IOExpanderAPortBPin::time_of_flight_middle_shutdown + 8,
 	                                                        io_expander_a_);
 	time_of_flight_right_ = std::make_unique<TimeOfFlight>(AddressParameter::time_of_flight_right,
-	                                                       IOExpanderAPortBPin::time_of_flight_right_shutdown,
+	                                                       IOExpanderAPortBPin::time_of_flight_right_shutdown + 8,
 	                                                       io_expander_a_);
 
 }
