@@ -235,12 +235,16 @@ Controller::Controller() : active_(false), output_position_x_(0), output_attitud
      *  TODO LAB 7 YOUR CODE HERE.
      */
 
+    setControllerParameter(controller_parameter_);
+
     /*
      *  Using the setControllerReference class member function, set the
      *  controller reference to be the class member controller reference struct.
      *
      *  TODO LAB 7 YOUR CODE HERE.
      */
+
+    setControllerReference(controller_reference_);
 
     /*
      *  Initialize NeoPixel frame for controller active status.
@@ -269,7 +273,7 @@ Controller::getActuationCommand() const
      *
      *  TODO LAB 7 YOUR CODE HERE.
      */
-    return ActuationCommand();
+    return actuation_command_;
 }
 
 bool
@@ -280,7 +284,7 @@ Controller::getActiveStatus() const
      *
      *  TODO LAB 7 YOUR CODE HERE.
      */
-    return false;
+    return active_;
 }
 
 ControllerParameter
@@ -291,7 +295,7 @@ Controller::getControllerParameter() const
      *
      *  TODO LAB 7 YOUR CODE HERE.
      */
-    return ControllerParameter();
+    return controller_parameter_;
 }
 
 ControllerReference
@@ -302,7 +306,7 @@ Controller::getControllerReference() const
      *
      *  TODO LAB 7 YOUR CODE HERE.
      */
-    return ControllerReference();
+    return controller_reference_;
 }
 
 void
@@ -316,6 +320,8 @@ Controller::setControllerParameter(const ControllerParameter& controller_paramet
      *  TODO LAB 7 YOUR CODE HERE.
      */
 
+    controller_parameter_ = controller_parameter;
+
     /*
      *  Set the Z attitude open-loop controller gain entry in the class member
      *  controller parameter struct to the class member Z attitude open-loop
@@ -324,6 +330,8 @@ Controller::setControllerParameter(const ControllerParameter& controller_paramet
      *  TODO LAB 7 YOUR CODE HERE.
      */
 
+    open_loop_controller_attitude_z_ = controller_parameter_.attitude_z_gain_open_loop;
+
     /*
      *  Set the PID controller gain structs in the class member controller
      *  parameter struct to the corresponding class member PID controllers.
@@ -331,12 +339,21 @@ Controller::setControllerParameter(const ControllerParameter& controller_paramet
      *  TODO LAB 7 YOUR CODE HERE.
      */
 
+    pid_controller_attitude_y_.setGain(controller_parameter_.pid_controller_gain_attitude_y);
+    pid_controller_attitude_z_.setGain(controller_parameter_.pid_controller_gain_attitude_z);
+    pid_controller_position_x_.setGain(controller_parameter_.pid_controller_gain_position_x);
+
     /*
      *  Set the controller saturation structs in the class member controller
      *  parameter struct to the corresponding class member controllers.
      *
      *  TODO LAB 7 YOUR CODE HERE.
      */
+
+    pid_controller_attitude_y_.setSaturation(controller_parameter_.pid_controller_saturation_attitude_y);
+    pid_controller_attitude_z_.setSaturation(controller_parameter_.pid_controller_saturation_attitude_z);
+    pid_controller_position_x_.setSaturation(controller_parameter_.pid_controller_saturation_position_x);
+
 }
 
 void
@@ -350,6 +367,8 @@ Controller::setControllerReference(const ControllerReference& controller_referen
      *  TODO LAB 7 YOUR CODE HERE.
      */
 
+    controller_reference_ = controller_reference;
+
     /*
      *  Set the entries in the class member controller reference
      *  struct to the corresponding class member controllers.
@@ -361,6 +380,12 @@ Controller::setControllerReference(const ControllerReference& controller_referen
      *
      *  TODO LAB 7 YOUR CODE HERE.
      */
+
+    pid_controller_attitude_y_.setReference(controller_reference_.attitude_y);
+    pid_controller_attitude_z_.setReference(controller_reference_.attitude_z);
+    pid_controller_position_x_.setReference(controller_reference_.position_x);
+
+    open_loop_controller_attitude_z_.setReference(controller_reference_.attitude_z);
 }
 
 void
@@ -384,6 +409,8 @@ Controller::setPeriod(const double& period, const bool& fast_domain)
          *
          *  TODO LAB 7 YOUR CODE HERE.
          */
+
+        pid_controller_attitude_y_.setPeriod(period);
     }
     else
     {
@@ -393,6 +420,7 @@ Controller::setPeriod(const double& period, const bool& fast_domain)
          *
          *  TODO LAB 7 YOUR CODE HERE.
          */
+        pid_controller_position_x_.setPeriod(period);
 
         /*
          *  Set the class member Z attitude (yaw) PID controller
@@ -400,6 +428,7 @@ Controller::setPeriod(const double& period, const bool& fast_domain)
          *
          *  TODO LAB 7 YOUR CODE HERE.
          */
+        pid_controller_attitude_z_.setPeriod(period);
     }
 }
 
@@ -413,11 +442,16 @@ Controller::control(const bool& fast_domain)
      *  TODO LAB 7 YOUR CODE HERE.
      */
 
+    EncoderData eData = sensor_->getEncoderData();
+    IMUData iData = sensor_->getIMUData();
+
     /*
      *  Update the controller active status using the IMU data struct.
      *
      *  TODO LAB 7 YOUR CODE HERE.
      */
+
+    updateActiveStatus(iData);
 
     /*
      *  The reason behind the fast and slow time domain setup here
@@ -439,6 +473,8 @@ Controller::control(const bool& fast_domain)
          *  TODO LAB 7 YOUR CODE HERE.
          */
 
+        pid_controller_attitude_y_.setState(iData.attitude_y);
+
         /*
          *  Set the error differential input (delta e) of the class member
          *  Y attitude (pitch) PID controller to be the Y angular velocity
@@ -447,6 +483,8 @@ Controller::control(const bool& fast_domain)
          *  TODO LAB 7 YOUR CODE HERE.
          */
 
+        pid_controller_attitude_y_.setErrorDifferential(iData.angular_velocity_y);
+
         /*
          *  Execute the class member Y attitude (pitch) PID controller
          *  and store the output into the class member Y attitude (pitch)
@@ -454,6 +492,8 @@ Controller::control(const bool& fast_domain)
          *
          *  TODO LAB 7 YOUR CODE HERE.
          */
+
+        output_attitude_y_ = pid_controller_attitude_y_.control();
     }
     else
     {
@@ -465,6 +505,8 @@ Controller::control(const bool& fast_domain)
          *  TODO LAB 7 YOUR CODE HERE.
          */
 
+        pid_controller_position_x_.setState(eData.position_x);
+
         /*
          *  Set the error differential input (delta e) of the class member
          *  X position (forward/backward) PID controller to be the X
@@ -472,6 +514,8 @@ Controller::control(const bool& fast_domain)
          *
          *  TODO LAB 7 YOUR CODE HERE.
          */
+
+        pid_controller_position_x_.setErrorDifferential(eData.velocity_x);
 
         /*
          *  Set the error differential input (delta e) of the class member
@@ -481,6 +525,8 @@ Controller::control(const bool& fast_domain)
          *  TODO LAB 7 YOUR CODE HERE.
          */
 
+        pid_controller_attitude_z_.setErrorDifferential(iData.angular_velocity_z);
+
         /*
          *  Execute the class member X position (forward/backward) PID
          *  controller and store the output into the class member X position
@@ -488,6 +534,8 @@ Controller::control(const bool& fast_domain)
          *
          *  TODO LAB 7 YOUR CODE HERE.
          */
+
+        output_position_x_ = pid_controller_position_x_.control();
 
         /*
          *  Execute the class member Z attitude (yaw) open-loop and PID
@@ -509,6 +557,8 @@ Controller::control(const bool& fast_domain)
          *
          *  TODO LAB 7 YOUR CODE HERE.
          */
+
+        output_attitude_z_ = pid_controller_attitude_z_.control();
     }
 
     /*
@@ -517,6 +567,8 @@ Controller::control(const bool& fast_domain)
      *
      *  TODO LAB 7 YOUR CODE HERE.
      */
+
+    double left_out = output_position_x_ + output_attitude_y_ + output_attitude_z_;
 
     /*
      *  Produce the right motor output by adding the
@@ -527,6 +579,8 @@ Controller::control(const bool& fast_domain)
      *  TODO LAB 7 YOUR CODE HERE.
      */
 
+    double right_out = (output_position_x_ + output_attitude_y_) - output_attitude_z_;
+
     /*
      *  If the controller is inactive, stop the motors
      *  by setting both the motor outputs to 0.
@@ -534,12 +588,20 @@ Controller::control(const bool& fast_domain)
      *  TODO LAB 7 YOUR CODE HERE.
      */
 
+    if(!active_)
+    {
+        left_out = 0;
+        right_out = 0;
+    }
+
     /*
      *  Set the motor enable in the class member actuation
      *  command struct to true, arming the motors.
      *
      *  TODO LAB 7 YOUR CODE HERE.
      */
+
+    actuation_command_.motor_enable = true;
 
     /*
      *  Set the motor directions in the class member actuation
@@ -553,6 +615,9 @@ Controller::control(const bool& fast_domain)
      *
      *  TODO LAB 7 YOUR CODE HERE.
      */
+
+    actuation_command_.motor_left_forward = (left_out > MotorParameter::pwm_min);
+    actuation_command_.motor_right_forward = (right_out > MotorParameter::pwm_min);
 
     /*
      *  Using the clamp function from the math header, clamp the
@@ -575,6 +640,10 @@ Controller::control(const bool& fast_domain)
      *
      *  TODO LAB 7 YOUR CODE HERE.
      */
+
+    actuation_command_.motor_left_pwm = clamp(left_out, MotorParameter::pwm_min, MotorParameter::pwm_max);
+    actuation_command_.motor_right_pwm = clamp(right_out, MotorParameter::pwm_min, MotorParameter::pwm_max);
+
 }
 
 void

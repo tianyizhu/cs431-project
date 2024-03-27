@@ -516,6 +516,8 @@ realTimeTask(void* pvParameters)
          *  TODO LAB 7 YOUR CODE HERE.
          */
 
+        if (controller_) controller_->control(true);
+
         /*
          *  Slow domain tasks.
          */
@@ -543,6 +545,8 @@ realTimeTask(void* pvParameters)
              *  TODO LAB 7 YOUR CODE HERE.
              */
 
+            if (controller_) controller_->control(false);
+
             /*
              *  Reset period domain timer global variable to 0.
              *
@@ -566,6 +570,10 @@ realTimeTask(void* pvParameters)
          *  TODO LAB 7 YOUR CODE HERE.
          */
 
+        ActuationCommand control_command = ActuationCommand();
+        if (controller_) control_command = controller_->getActuationCommand();
+        if (actuator_) actuator_->actuate(control_command);
+
         /*
          *  Add the fast domain period to the period domain timer global variable.
          *
@@ -587,17 +595,16 @@ realTimeTask(void* pvParameters)
          */
 //        delayMicroseconds(4500);
         unsigned long exec_time = micros() - time_point_start;
-        execution_time_real_time_task_ = exec_time;
         time_point_start = exec_time;
 
         // lab 6 demo
-        ActuationCommand cmd = ActuationCommand();
-        cmd.motor_enable = true;
-        cmd.motor_left_forward = true;
-        cmd.motor_left_pwm = 128;
-        cmd.motor_right_forward = true;
-        cmd.motor_right_pwm = 128;
-        actuator_->actuate(cmd);
+//        ActuationCommand cmd = ActuationCommand();
+//        cmd.motor_enable = true;
+//        cmd.motor_left_forward = true;
+//        cmd.motor_left_pwm = 128;
+//        cmd.motor_right_forward = true;
+//        cmd.motor_right_pwm = 128;
+//        actuator_->actuate(cmd);
     }
 
     /*
