@@ -595,6 +595,7 @@ realTimeTask(void* pvParameters)
          */
 //        delayMicroseconds(4500);
         unsigned long exec_time = micros() - time_point_start;
+        execution_time_real_time_task_ = exec_time;
         time_point_start = exec_time;
 
         // lab 6 demo
