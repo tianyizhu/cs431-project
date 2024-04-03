@@ -162,7 +162,7 @@ ManeuverPlanner::plan()
      *
      *  TODO LAB 8 YOUR CODE HERE.
      */
-    if ((!plan_completed_) || (!controller_.getActiveStatus())) 
+    if ((!plan_completed_) || (!controller_->getActiveStatus()))
         return -1;
     
 
@@ -224,6 +224,11 @@ ManeuverPlanner::plan()
          *
          *  TODO LAB 8 YOUR CODE HERE.
          */
+        controller_->setControllerReference(generateControllerReference());
+
+        maneuver_timer_ = millis();
+        maneuver_started_ = true;
+
 
     }
     else
@@ -276,7 +281,7 @@ ManeuverPlanner::plan()
                  *
                  *  TODO LAB 8 YOUR CODE HERE.
                  */
-                if (sensor_->getEncoderData() > maneuver_->transition_value) {
+                if (sensor_->getEncoderData().position_x > maneuver_->transition_value) {
                     maneuver_ = maneuver_->next;
                     maneuver_counter_++;
                     maneuver_started_ = false;
@@ -299,7 +304,7 @@ ManeuverPlanner::plan()
                  *
                  *  TODO LAB 8 YOUR CODE HERE.
                  */
-                if (sensor_->getEncoderData() < maneuver_->transition_value) {
+                if (sensor_->getEncoderData().position_x < maneuver_->transition_value) {
                     maneuver_ = maneuver_->next;
                     maneuver_counter_++;
                     maneuver_started_ = false;
@@ -322,7 +327,7 @@ ManeuverPlanner::plan()
                  *
                  *  TODO LAB 8 YOUR CODE HERE.
                  */
-                if (sensor_->getTimeOfFlightData() > maneuver_->transition_value) {
+                if (sensor_->getTimeOfFlightData().range_left > maneuver_->transition_value) {
                     maneuver_ = maneuver_->next;
                     maneuver_counter_++;
                     maneuver_started_ = false;
@@ -345,7 +350,7 @@ ManeuverPlanner::plan()
                  *
                  *  TODO LAB 8 YOUR CODE HERE.
                  */
-                if (sensor_->getTimeOfFlightData() < maneuver_->transition_value) {
+                if (sensor_->getTimeOfFlightData().range_left < maneuver_->transition_value) {
                     maneuver_ = maneuver_->next;
                     maneuver_counter_++;
                     maneuver_started_ = false;
@@ -368,7 +373,7 @@ ManeuverPlanner::plan()
                  *
                  *  TODO LAB 8 YOUR CODE HERE.
                  */
-                if (sensor_->getTimeOfFlightData() > maneuver_->transition_value) {
+                if (sensor_->getTimeOfFlightData().range_middle > maneuver_->transition_value) {
                     maneuver_ = maneuver_->next;
                     maneuver_counter_++;
                     maneuver_started_ = false;
@@ -391,7 +396,7 @@ ManeuverPlanner::plan()
                  *
                  *  TODO LAB 8 YOUR CODE HERE.
                  */
-                if (sensor_->getTimeOfFlightData() < maneuver_->transition_value) {
+                if (sensor_->getTimeOfFlightData().range_middle < maneuver_->transition_value) {
                     maneuver_ = maneuver_->next;
                     maneuver_counter_++;
                     maneuver_started_ = false;
@@ -414,7 +419,7 @@ ManeuverPlanner::plan()
                  *
                  *  TODO LAB 8 YOUR CODE HERE.
                  */
-                if (sensor_->getTimeOfFlightData() > maneuver_->transition_value) {
+                if (sensor_->getTimeOfFlightData().range_right > maneuver_->transition_value) {
                     maneuver_ = maneuver_->next;
                     maneuver_counter_++;
                     maneuver_started_ = false;
@@ -437,7 +442,7 @@ ManeuverPlanner::plan()
                  *
                  *  TODO LAB 8 YOUR CODE HERE.
                  */
-                if (sensor_->getTimeOfFlightData() < maneuver_->transition_value) {
+                if (sensor_->getTimeOfFlightData().range_right < maneuver_->transition_value) {
                     maneuver_ = maneuver_->next;
                     maneuver_counter_++;
                     maneuver_started_ = false;
