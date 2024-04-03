@@ -226,6 +226,8 @@ setup()
      *  TODO LAB 8 YOUR CODE HERE.
      */
 
+	 planner_ = std::make_shared<Planner>(planner_);
+
     /*
      *  Create I/O expander interrupt service tasks using the FreeRTOS
      *  xTaskCreatePinnedToCore function. Set the task descriptive name to be the

@@ -306,8 +306,13 @@ pushButtonAInterruptHandler(void* arg)
      *  TODO LAB 8 YOUR CODE HERE.
      */
 
-    // lab 4 demo
-    serial_number_ += 1;
+    if(planner_)
+    {
+        planner_->start();
+    }
+
+//    // lab 4 demo
+//    serial_number_ += 1;
 }
 
 void IRAM_ATTR
