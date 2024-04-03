@@ -501,7 +501,7 @@ ManeuverPlanner::generateControllerReference() const
              *
              *  TODO LAB 8 YOUR CODE HERE.
              */
-
+            controller_reference.position_x = sensor_->getEncoderData().position_x;
             break;
         }
         case Maneuver::Type::reverse:
@@ -514,7 +514,7 @@ ManeuverPlanner::generateControllerReference() const
              *
              *  TODO LAB 8 YOUR CODE HERE.
              */
-
+            controller_reference.position_x = sensor_->getEncoderData().position_x - 1000;
             break;
         }
         case Maneuver::Type::reverse_left:
@@ -535,7 +535,9 @@ ManeuverPlanner::generateControllerReference() const
              *
              *  TODO LAB 8 YOUR CODE HERE.
              */
-
+            EncoderData eData = sensor_->getEncoderData();
+            controller_reference.position_x = eData.position_x - 1000;
+            controller_reference.attitude_z = degreesToRadians(90);
             break;
         }
         case Maneuver::Type::reverse_right:
@@ -556,6 +558,9 @@ ManeuverPlanner::generateControllerReference() const
              *
              *  TODO LAB 8 YOUR CODE HERE.
              */
+            EncoderData eData = sensor_->getEncoderData();
+            controller_reference.position_x = eData.position_x - 1000;
+            controller_reference.attitude_z = degreesToRadians(-90);
 
             break;
         }
@@ -569,6 +574,7 @@ ManeuverPlanner::generateControllerReference() const
              *
              *  TODO LAB 8 YOUR CODE HERE.
              */
+            controller_reference.position_x = sensor_->getEncoderData().position_x + 1000;
 
             break;
         }
@@ -586,6 +592,10 @@ ManeuverPlanner::generateControllerReference() const
              *
              *  TODO LAB 8 YOUR CODE HERE.
              */
+            EncoderData eData = sensor_->getEncoderData();
+            controller_reference.position_x = eData.position_x + 1000;
+            controller_reference.attitude_z = degreesToRadians(90);
+
 
             break;
         }
@@ -603,6 +613,9 @@ ManeuverPlanner::generateControllerReference() const
              *
              *  TODO LAB 8 YOUR CODE HERE.
              */
+            EncoderData eData = sensor_->getEncoderData();
+            controller_reference.position_x = eData.position_x + 1000;
+            controller_reference.attitude_z = degreesToRadians(-90);
 
             break;
         }
