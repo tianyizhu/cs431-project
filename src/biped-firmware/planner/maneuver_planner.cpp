@@ -125,6 +125,14 @@ ManeuverPlanner::start()
      *
      *  TODO LAB 8 YOUR CODE HERE.
      */
+     
+    if (plan_completed_) {
+        maneuver_ = maneuver_start_;
+        maneuver_counter_ = 1;
+        maneuver_started_ = false;
+        plan_started_ = false;
+        plan_completed_ = false;
+    }
 }
 
 int
@@ -154,6 +162,9 @@ ManeuverPlanner::plan()
      *
      *  TODO LAB 8 YOUR CODE HERE.
      */
+    if ((!plan_completed_) || (!controller_.getActiveStatus())) 
+        return -1;
+    
 
     /*
      *  Detect plan completion.
@@ -170,6 +181,9 @@ ManeuverPlanner::plan()
          *
          *  TODO LAB 8 YOUR CODE HERE.
          */
+        plan_started_ = false;
+        plan_completed_ = true;
+        return -1;
     }
 
     if (!plan_started_)
@@ -210,6 +224,7 @@ ManeuverPlanner::plan()
          *
          *  TODO LAB 8 YOUR CODE HERE.
          */
+
     }
     else
     {
@@ -237,6 +252,12 @@ ManeuverPlanner::plan()
                  *
                  *  TODO LAB 8 YOUR CODE HERE.
                  */
+                
+                if (millis() - maneuver_timer_ > maneuver_->transition_value) {
+                    maneuver_ = maneuver_->next;
+                    maneuver_counter_++;
+                    maneuver_started_ = false;
+                }
 
                 break;
             }
@@ -255,6 +276,11 @@ ManeuverPlanner::plan()
                  *
                  *  TODO LAB 8 YOUR CODE HERE.
                  */
+                if (sensor_->getEncoderData() > maneuver_->transition_value) {
+                    maneuver_ = maneuver_->next;
+                    maneuver_counter_++;
+                    maneuver_started_ = false;
+                }
 
                 break;
             }
@@ -273,6 +299,11 @@ ManeuverPlanner::plan()
                  *
                  *  TODO LAB 8 YOUR CODE HERE.
                  */
+                if (sensor_->getEncoderData() < maneuver_->transition_value) {
+                    maneuver_ = maneuver_->next;
+                    maneuver_counter_++;
+                    maneuver_started_ = false;
+                }
 
                 break;
             }
@@ -291,6 +322,11 @@ ManeuverPlanner::plan()
                  *
                  *  TODO LAB 8 YOUR CODE HERE.
                  */
+                if (sensor_->getTimeOfFlightData() > maneuver_->transition_value) {
+                    maneuver_ = maneuver_->next;
+                    maneuver_counter_++;
+                    maneuver_started_ = false;
+                }
 
                 break;
             }
@@ -309,6 +345,11 @@ ManeuverPlanner::plan()
                  *
                  *  TODO LAB 8 YOUR CODE HERE.
                  */
+                if (sensor_->getTimeOfFlightData() < maneuver_->transition_value) {
+                    maneuver_ = maneuver_->next;
+                    maneuver_counter_++;
+                    maneuver_started_ = false;
+                }
 
                 break;
             }
@@ -327,6 +368,11 @@ ManeuverPlanner::plan()
                  *
                  *  TODO LAB 8 YOUR CODE HERE.
                  */
+                if (sensor_->getTimeOfFlightData() > maneuver_->transition_value) {
+                    maneuver_ = maneuver_->next;
+                    maneuver_counter_++;
+                    maneuver_started_ = false;
+                }
 
                 break;
             }
@@ -345,6 +391,11 @@ ManeuverPlanner::plan()
                  *
                  *  TODO LAB 8 YOUR CODE HERE.
                  */
+                if (sensor_->getTimeOfFlightData() < maneuver_->transition_value) {
+                    maneuver_ = maneuver_->next;
+                    maneuver_counter_++;
+                    maneuver_started_ = false;
+                }
 
                 break;
             }
@@ -363,6 +414,11 @@ ManeuverPlanner::plan()
                  *
                  *  TODO LAB 8 YOUR CODE HERE.
                  */
+                if (sensor_->getTimeOfFlightData() > maneuver_->transition_value) {
+                    maneuver_ = maneuver_->next;
+                    maneuver_counter_++;
+                    maneuver_started_ = false;
+                }
 
                 break;
             }
@@ -381,6 +437,11 @@ ManeuverPlanner::plan()
                  *
                  *  TODO LAB 8 YOUR CODE HERE.
                  */
+                if (sensor_->getTimeOfFlightData() < maneuver_->transition_value) {
+                    maneuver_ = maneuver_->next;
+                    maneuver_counter_++;
+                    maneuver_started_ = false;
+                }
 
                 break;
             }
@@ -400,7 +461,7 @@ ManeuverPlanner::plan()
      *
      *  TODO LAB 8 YOUR CODE HERE.
      */
-    return 0;
+    return maneuver_counter_;
 }
 
 ControllerReference
