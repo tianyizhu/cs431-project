@@ -162,7 +162,7 @@ ManeuverPlanner::plan()
      *
      *  TODO LAB 8 YOUR CODE HERE.
      */
-    if ((!plan_completed_) || (!controller_->getActiveStatus()))
+    if ((plan_completed_) || (!controller_->getActiveStatus()))
         return -1;
     
 

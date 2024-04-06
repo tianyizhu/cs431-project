@@ -222,8 +222,8 @@ WaypointPlanner::plan()
          *  TODO LAB 8 YOUR CODE HERE.
          */
 
-        start();
-        waypoint_->controller_reference = controller_->getControllerReference();
+//        start();
+        controller_->setControllerReference(waypoint_->controller_reference);
         waypoint_timer_ = millis();
         waypoint_started_ = true;
     }
