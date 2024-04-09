@@ -83,9 +83,9 @@ Controller::Controller() : active_(false), output_position_x_(0), output_attitud
      *  TODO LAB 7 YOUR CODE HERE.
      */
     controller_parameter_.pid_controller_gain_position_x.proportional = 1000;
-    controller_parameter_.pid_controller_gain_position_x.differential = 1507;
-    controller_parameter_.pid_controller_gain_position_x.integral = 0;
-    controller_parameter_.pid_controller_gain_position_x.integral_max = 0;
+    controller_parameter_.pid_controller_gain_position_x.differential = 1600;
+    controller_parameter_.pid_controller_gain_position_x.integral = 200;
+    controller_parameter_.pid_controller_gain_position_x.integral_max = 100;
 
     /*
      *  Set entries in the Y attitude (pitch) PID controller gain struct in
@@ -145,8 +145,8 @@ Controller::Controller() : active_(false), output_position_x_(0), output_attitud
      *
      *  TODO LAB 7 YOUR CODE HERE.
      */
-    controller_parameter_.pid_controller_gain_attitude_y.proportional = -3189.0;
-    controller_parameter_.pid_controller_gain_attitude_y.differential = -55.0;
+    controller_parameter_.pid_controller_gain_attitude_y.proportional = -4000;
+    controller_parameter_.pid_controller_gain_attitude_y.differential = -45.0;
     controller_parameter_.pid_controller_gain_attitude_y.integral = 0;
     controller_parameter_.pid_controller_gain_attitude_y.integral_max = 0;
 
@@ -184,7 +184,7 @@ Controller::Controller() : active_(false), output_position_x_(0), output_attitud
      *
      *  TODO LAB 8 YOUR CODE HERE.
      */
-    controller_parameter_.attitude_z_gain_open_loop = 25;
+    controller_parameter_.attitude_z_gain_open_loop = 24;
     controller_parameter_.pid_controller_gain_attitude_z.proportional = 0;
     controller_parameter_.pid_controller_gain_attitude_z.differential = -1;
     controller_parameter_.pid_controller_gain_attitude_z.integral = 0;
@@ -223,8 +223,8 @@ Controller::Controller() : active_(false), output_position_x_(0), output_attitud
      *
      *  TODO LAB 8 YOUR CODE HERE.
      */
-    controller_parameter_.pid_controller_saturation_position_x.input_lower = -0.3;
-    controller_parameter_.pid_controller_saturation_position_x.input_upper = 0.3;
+    controller_parameter_.pid_controller_saturation_position_x.input_lower = -0.4;
+    controller_parameter_.pid_controller_saturation_position_x.input_upper = 0.4;
 
     /*
      *  Using the setControllerParameter class member function, set the
@@ -558,7 +558,7 @@ Controller::control(const bool& fast_domain)
          *  TODO LAB 7 YOUR CODE HERE.
          */
 
-        output_attitude_z_ = open_loop_controller_attitude_z_.control() * abs(eData.velocity_x) + pid_controller_attitude_z_.control();
+        output_attitude_z_ = open_loop_controller_attitude_z_.control() * eData.velocity_x + pid_controller_attitude_z_.control();
 
     }
 
@@ -567,9 +567,11 @@ Controller::control(const bool& fast_domain)
      *  class member controller outputs.
      *
      *  TODO LAB 7 YOUR CODE HERE.
+     *
      */
 
     double left_out = output_position_x_ + output_attitude_y_ + output_attitude_z_;
+//    double left_out = output_position_x_ + output_attitude_y_;
 
     /*
      *  Produce the right motor output by adding the
@@ -580,7 +582,8 @@ Controller::control(const bool& fast_domain)
      *  TODO LAB 7 YOUR CODE HERE.
      */
 
-    double right_out = (output_position_x_ + output_attitude_y_) - output_attitude_z_;
+    double right_out = ((output_position_x_ + output_attitude_y_) - output_attitude_z_) * 1.07;
+//    double right_out = (output_position_x_ + output_attitude_y_);
 
     /*
      *  If the controller is inactive, stop the motors
