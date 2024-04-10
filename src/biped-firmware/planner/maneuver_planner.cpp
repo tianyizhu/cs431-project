@@ -53,50 +53,82 @@ ManeuverPlanner::ManeuverPlanner() : maneuver_counter_(1), maneuver_timer_(0), p
      *      - Park for 2 seconds.
      *      - Then, start maneuver 2.
      */
-    maneuver_1->transition_type = Maneuver::TransitionType::duration;
-    maneuver_1->transition_value = 2;
-    maneuver_1->type = Maneuver::Type::park;
+//    maneuver_1->transition_type = Maneuver::TransitionType::duration;
+//    maneuver_1->transition_value = 2;
+//    maneuver_1->type = Maneuver::Type::park;
+//    maneuver_1->next = maneuver_2;
+//
+//    /*
+//     *  Example plan maneuver 2 configuration:
+//     *      - Drive forward until the X position goes above 1 meter.
+//     *      - Then, start maneuver 3.
+//     */
+//    maneuver_2->transition_type = Maneuver::TransitionType::position_x_above;
+//    maneuver_2->transition_value = 1;
+//    maneuver_2->type = Maneuver::Type::drive;
+//    maneuver_2->next = maneuver_3;
+//
+//    /*
+//     *  Example plan maneuver 3 configuration:
+//     *      - Park for 2 seconds.
+//     *      - Then, start maneuver 4.
+//     */
+//    maneuver_3->transition_type = Maneuver::TransitionType::duration;
+//    maneuver_3->transition_value = 2;
+//    maneuver_3->type = Maneuver::Type::park;
+//    maneuver_3->next = maneuver_4;
+//
+//    /*
+//     *  Example plan maneuver 4 configuration:
+//     *      - Drive right until the X position goes above 2 meters.
+//     *      - Then, start maneuver 5.
+//     */
+//    maneuver_4->transition_type = Maneuver::TransitionType::position_x_above;
+//    maneuver_4->transition_value = 2;
+//    maneuver_4->type = Maneuver::Type::drive_right;
+//    maneuver_4->next = maneuver_5;
+//
+//    /*
+//     *  Example plan maneuver 5 configuration:
+//     *      - Park for 2 seconds.
+//     *      - The end.
+//     */
+//    maneuver_5->transition_type = Maneuver::TransitionType::duration;
+//    maneuver_5->transition_value = 2;
+//    maneuver_5->type = Maneuver::Type::park;
+//    maneuver_5->next = nullptr;
+
+    maneuver_1->transition_type = Maneuver::TransitionType::range_middle_above;
+    maneuver_1->transition_value = 0.1;
+    maneuver_1->type = Maneuver::Type::reverse;
     maneuver_1->next = maneuver_2;
 
-    /*
-     *  Example plan maneuver 2 configuration:
-     *      - Drive forward until the X position goes above 1 meter.
-     *      - Then, start maneuver 3.
-     */
-    maneuver_2->transition_type = Maneuver::TransitionType::position_x_above;
-    maneuver_2->transition_value = 1;
-    maneuver_2->type = Maneuver::Type::drive;
+    maneuver_2->transition_type = Maneuver::TransitionType::duration;
+    maneuver_2->transition_value = 0.5;
+    maneuver_2->type = Maneuver::Type::park;
     maneuver_2->next = maneuver_3;
+//
+//    maneuver_3->transition_type = Maneuver::TransitionType::range_left_above;
+//    maneuver_3->transition_value = 0.2;
+//    maneuver_3->type = Maneuver::Type::drive_right;
+//    maneuver_3->next = maneuver_4;
+//
+//    maneuver_4->transition_type = Maneuver::TransitionType::duration;
+//    maneuver_4->transition_value = 1;
+//    maneuver_4->type = Maneuver::Type::drive_left;
+//    maneuver_4->next = maneuver_1;
 
-    /*
-     *  Example plan maneuver 3 configuration:
-     *      - Park for 2 seconds.
-     *      - Then, start maneuver 4.
-     */
-    maneuver_3->transition_type = Maneuver::TransitionType::duration;
-    maneuver_3->transition_value = 2;
-    maneuver_3->type = Maneuver::Type::park;
+
+
+    maneuver_3->transition_type = Maneuver::TransitionType::range_middle_below;
+    maneuver_3->transition_value = 0.2;
+    maneuver_3->type = Maneuver::Type::drive;
     maneuver_3->next = maneuver_4;
 
-    /*
-     *  Example plan maneuver 4 configuration:
-     *      - Drive right until the X position goes above 2 meters.
-     *      - Then, start maneuver 5.
-     */
-    maneuver_4->transition_type = Maneuver::TransitionType::position_x_above;
-    maneuver_4->transition_value = 2;
-    maneuver_4->type = Maneuver::Type::drive_right;
-    maneuver_4->next = maneuver_5;
-
-    /*
-     *  Example plan maneuver 5 configuration:
-     *      - Park for 2 seconds.
-     *      - The end.
-     */
-    maneuver_5->transition_type = Maneuver::TransitionType::duration;
-    maneuver_5->transition_value = 2;
-    maneuver_5->type = Maneuver::Type::park;
-    maneuver_5->next = nullptr;
+    maneuver_4->transition_type = Maneuver::TransitionType::duration;
+    maneuver_4->transition_value = 0.5;
+    maneuver_4->type = Maneuver::Type::park;
+    maneuver_4->next = maneuver_1;
 
     /*
      *  Using the example plan above, create your own maneuver-based plan.

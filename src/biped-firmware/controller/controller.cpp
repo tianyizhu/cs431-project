@@ -223,8 +223,8 @@ Controller::Controller() : active_(false), output_position_x_(0), output_attitud
      *
      *  TODO LAB 8 YOUR CODE HERE.
      */
-    controller_parameter_.pid_controller_saturation_position_x.input_lower = -0.4;
-    controller_parameter_.pid_controller_saturation_position_x.input_upper = 0.4;
+    controller_parameter_.pid_controller_saturation_position_x.input_lower = -0.2;
+    controller_parameter_.pid_controller_saturation_position_x.input_upper = 0.2;
 
     /*
      *  Using the setControllerParameter class member function, set the
