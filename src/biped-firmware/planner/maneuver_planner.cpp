@@ -258,7 +258,7 @@ ManeuverPlanner::plan()
                  *  TODO LAB 8 YOUR CODE HERE.
                  */
                 
-                if (millis() - maneuver_timer_ > maneuver_->transition_value) {
+                if (millis() - maneuver_timer_ > secondsToMilliseconds(maneuver_->transition_value)) {
                     maneuver_ = maneuver_->next;
                     maneuver_counter_++;
                     maneuver_started_ = false;
@@ -594,7 +594,7 @@ ManeuverPlanner::generateControllerReference() const
              */
             EncoderData eData = sensor_->getEncoderData();
             controller_reference.position_x = eData.position_x + 1000;
-            controller_reference.attitude_z = degreesToRadians(90);
+            controller_reference.attitude_z = degreesToRadians(-90);
 
 
             break;
@@ -615,7 +615,7 @@ ManeuverPlanner::generateControllerReference() const
              */
             EncoderData eData = sensor_->getEncoderData();
             controller_reference.position_x = eData.position_x + 1000;
-            controller_reference.attitude_z = degreesToRadians(-90);
+            controller_reference.attitude_z = degreesToRadians(90);
 
             break;
         }

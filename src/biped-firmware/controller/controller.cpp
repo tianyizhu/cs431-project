@@ -558,7 +558,7 @@ Controller::control(const bool& fast_domain)
          *  TODO LAB 7 YOUR CODE HERE.
          */
 
-        output_attitude_z_ = open_loop_controller_attitude_z_.control() * eData.velocity_x + pid_controller_attitude_z_.control();
+        output_attitude_z_ = open_loop_controller_attitude_z_.control() * fabs(eData.velocity_x) + pid_controller_attitude_z_.control();
 
     }
 
