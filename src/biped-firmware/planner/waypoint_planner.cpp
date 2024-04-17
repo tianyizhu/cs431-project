@@ -53,30 +53,30 @@ WaypointPlanner::WaypointPlanner() : waypoint_counter_(1), waypoint_timer_(0), p
      *      - Go to 0 meter X position (0 meters forward) without turning for 2 seconds.
      *      - Then, start waypoint 2.
      */
-    waypoint_1->controller_reference.attitude_z = degreesToRadians(0);
-    waypoint_1->controller_reference.position_x = 0;
-    waypoint_1->duration = 2;
-    waypoint_1->next = waypoint_2;
+//    waypoint_1->controller_reference.attitude_z = degreesToRadians(0);
+//    waypoint_1->controller_reference.position_x = 0;
+//    waypoint_1->duration = 2;
+//    waypoint_1->next = waypoint_2;
 
     /*
      *  Example plan waypoint 2 configuration:
      *      - Go to 1 meter X position (1 meter forward) without turning for 10 seconds.
      *      - Then, start waypoint 3.
      */
-    waypoint_2->controller_reference.attitude_z = degreesToRadians(0);
-    waypoint_2->controller_reference.position_x = 1;
-    waypoint_2->duration = 10;
-    waypoint_2->next = waypoint_3;
+//    waypoint_2->controller_reference.attitude_z = degreesToRadians(0);
+//    waypoint_2->controller_reference.position_x = 0.6;
+//    waypoint_2->duration = 2;
+//    waypoint_2->next = waypoint_3;
 
     /*
      *  Example plan waypoint 3 configuration:
      *      - Go to 2 meter X position (1 meter forward) while turning right 90 degrees for 10 seconds.
      *      - Then, start waypoint 4.
      */
-    waypoint_3->controller_reference.attitude_z = degreesToRadians(90);
-    waypoint_3->controller_reference.position_x = 2;
-    waypoint_3->duration = 10;
-    waypoint_3->next = waypoint_4;
+//    waypoint_3->controller_reference.attitude_z = degreesToRadians(-90);
+//    waypoint_3->controller_reference.position_x = 0
+//    waypoint_3->duration = 2
+//    waypoint_3->next = waypoint_4;
 
     /*
      *  Example plan waypoint 4 configuration:
@@ -87,20 +87,20 @@ WaypointPlanner::WaypointPlanner() : waypoint_counter_(1), waypoint_timer_(0), p
      *  if it is driving forward. Then, the direction the Biped is turning in reverse
      *  is its reverse direction.
      */
-    waypoint_4->controller_reference.attitude_z = degreesToRadians(-90);
-    waypoint_4->controller_reference.position_x = 1;
-    waypoint_4->duration = 10;
-    waypoint_4->next = waypoint_5;
+//    waypoint_4->controller_reference.attitude_z = degreesToRadians(-90);
+//    waypoint_4->controller_reference.position_x = 1;
+//    waypoint_4->duration = 10;
+//    waypoint_4->next = waypoint_5;
 
     /*
      *  Example plan waypoint 5 configuration:
      *      - Go to 0 meters X position (1 meter backward) without turning for 10 seconds.
      *      - The end.
      */
-    waypoint_5->controller_reference.attitude_z = degreesToRadians(0);
-    waypoint_5->controller_reference.position_x = 0;
-    waypoint_5->duration = 10;
-    waypoint_5->next = nullptr;
+//    waypoint_5->controller_reference.attitude_z = degreesToRadians(0);
+//    waypoint_5->controller_reference.position_x = 0;
+//    waypoint_5->duration = 10;
+//    waypoint_5->next = nullptr;
 
     /*
      *  Using the example plan above, create your own waypoint-based plan.
@@ -112,6 +112,32 @@ WaypointPlanner::WaypointPlanner() : waypoint_counter_(1), waypoint_timer_(0), p
      *
      *  TODO LAB 9 YOUR CODE HERE.
      */
+
+    waypoint_1->controller_reference.attitude_z = degreesToRadians(0);
+    waypoint_1->controller_reference.position_x = 0;
+    waypoint_1->duration = 2;
+    waypoint_1->next = waypoint_2;
+
+    waypoint_2->controller_reference.attitude_z = degreesToRadians(0);
+    waypoint_2->controller_reference.position_x = 1;
+    waypoint_2->duration = 5;
+    waypoint_2->next = waypoint_3;
+
+    waypoint_3->controller_reference.attitude_z = degreesToRadians(240);
+    waypoint_3->controller_reference.position_x = 1.5;
+    waypoint_3->duration = 10;
+    waypoint_3->next = waypoint_4;
+
+    waypoint_4->controller_reference.attitude_z = degreesToRadians(0);
+    waypoint_4->controller_reference.position_x = 2.5;
+    waypoint_4->duration = 5;
+    waypoint_4->next = waypoint_5;
+
+    waypoint_5->controller_reference.attitude_z = degreesToRadians(-240);
+    waypoint_5->controller_reference.position_x = 3;
+    waypoint_5->duration = 10;
+    waypoint_5->next = nullptr;
+
 }
 
 void IRAM_ATTR
